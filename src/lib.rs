@@ -1,83 +1,37 @@
-use std::collections::HashMap;
+use uuid::Uuid;
 
-use serde::{Deserialize, Serialize};
+pub mod actions;
+pub mod app;
+pub mod components;
+pub mod db;
+pub mod helium10;
+pub mod icons;
+pub mod plots;
+pub mod state;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct InvocationResponse {
-    pub hash: String,
-    pub left: usize,
-    pub plan: String,
-    pub errorMsg: String,
+#[derive(Clone, Debug, PartialEq)]
+pub enum Routes {
+    Home,
+    Login,
+    AddNew,
+    Search,
+    Review,
+    Jupyter,
+    ProductPage { search_id: Uuid },
+    NotFound,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ProductListResponse {
-    status: String,
-    data: HashMap<String, ProductResponse>,
-}
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ProductResponse {
-    status: String,
-    data: ProductListing,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ProductListing {
-    requestId: String,
-    asin: String,
-    marketplace: String,
-    category: CategoryData,
-    productData: ProductData,
-    salesHistory: SalesHistory,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CategoryData {
-    id: usize,
-    name: String,
-    isCategoryBsr: bool,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ProductData {
-    sellerType: usize,
-    sellersNumber: usize,
-    title: String,
-    imageUrl: String,
-    bsr: usize,
-    price: f32,
-    fbaFee: usize,
-    mfnFee: usize,
-    dimensions: serde_json::Value,
-    sizeTier: usize,
-    numberOfImages: usize,
-    numberOfVariations: usize,
-    age: usize,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct SalesHistory {
-    history: HashMap<String, f32>,
-    minDate: String,
-    last30DaysSales: isize,
-    peak: bool,
-    last12MonthsSales: isize,
-    last12MonthsChange: isize,
-    bestMonth: String,
-    last90DaysSalesTrend: isize,
-    last90DaysPriceTrend: isize,
-}
-
-#[test]
-fn parse_invocation() {
-    let contents = include_str!("../responses/invocation.json");
-    let g = serde_json::from_str::<InvocationResponse>(contents).unwrap();
-    dbg!(g);
-}
-
-#[test]
-fn parse_product() {
-    let contents = include_str!("../responses/product.json");
-    let g = serde_json::from_str::<ProductListResponse>(contents).unwrap();
-    dbg!(g);
+impl Routes {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Routes::Home => "Home",
+            Routes::AddNew => "Import CSV",
+            Routes::Search => "Keyword Search",
+            Routes::Review => "Review Products",
+            Routes::Jupyter => "Open in Jupyter",
+            Routes::Login => "Login",
+            Routes::ProductPage { .. } => "Product Page",
+            Routes::NotFound => "Err 404. Not Found.",
+        }
+    }
 }

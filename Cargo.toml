@@ -7,16 +7,22 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1.0.44"
+# axum = { version = "0.2.8", features = ["ws", "headers"] }
 cookie_store = "0.15.0"
-har = "0.7.0"
-plotly = { version = "0.6.0", features = ["kaleido"] }
-polars = "0.16.0"
+# har = "0.7.0"
+plotly = { git = "https://github.com/jkelleyrtp/plotly.git", branch = "jk/ergo-fixes" }
+# plotly = { version = "0.6.0" }
+# polars = { version = "0.16.0", features = ["lazy"] }
 reqwest = { version = "0.11.4", features = ["cookies", "json"] }
 reqwest_cookie_store = "0.2.0"
 serde = { version = "1.0.130", features = ["derive"] }
 serde_json = "1.0.68"
-
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 tokio = { version = "1.12.0", features = ["full"] }
-
-[target.'cfg(target_arch = "wasm32")'.dependencies]
+dioxus = { path = "../../dioxus", features = ["ssr", "desktop"] }
+uuid = { version = "0.8.2", features = ["v4", "serde"] }
+# tantivy = "0.16.1"
+csv = "1.1.6"
+simple_logger = "1.13.0"
+log = "0.4.14"
+scraper = "0.12.0"
+rand = "0.8.4"
