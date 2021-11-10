@@ -10,7 +10,7 @@ use crate::state::use_provide_app_state;
 // body {
 // }
 
-pub static App: FC<()> = |(cx, props)| {
+pub static App: FC<()> = |cx, props| {
     //
     let mut state_ = use_provide_app_state(cx);
     let state = state_.read();

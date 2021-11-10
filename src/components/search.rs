@@ -7,7 +7,7 @@ use crate::{
     state::{use_app_state, KeywordEntry},
     Routes,
 };
-pub static Search: FC<()> = |(cx, props)| {
+pub static Search: FC<()> = |cx, props| {
     log::debug!("Rendeirng AddNew {:?}", cx.scope_id());
 
     let mut state = use_app_state(cx)?;

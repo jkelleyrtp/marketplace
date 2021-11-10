@@ -8,30 +8,30 @@ pub struct ResultsPageProps {
     id: Uuid,
 }
 
-pub static ResultsPage: FC<ResultsPageProps> = |(cx, props)| {
+pub static ResultsPage: FC<ResultsPageProps> = |cx, props| {
     let mut selected_snippet = use_state(cx, || 0);
     let state = use_app_state(cx)?;
     let state_read = state.read();
 
-    let plot1 = rsx! {
+    let plot1 = rsx! (
         SalesScatter {
             xrow: "",
             yrow: "",
             title: "Revenue vs Review Count"
             id: props.id,
         }
-    };
+    );
 
-    let plot2 = rsx! {
+    let plot2 = rsx! (
         SalesScatter {
             xrow: "",
             yrow: "",
             title: "Revenue vs Review Count"
             id: props.id,
         }
-    };
+    );
 
-    cx.render(rsx! {
+    cx.render(rsx! (
         section { class: "text-gray-500 bg-white body-font mx-auto px-12 pt-12"
             div { class: "container flex flex-row md:flex-row py-10 mx-auto"
                 {plot1}
@@ -41,7 +41,7 @@ pub static ResultsPage: FC<ResultsPageProps> = |(cx, props)| {
                 id: props.id
             }
         }
-    })
+    ))
 };
 
 #[derive(PartialEq, Props)]
@@ -49,7 +49,7 @@ struct ListingTableProps {
     id: Uuid,
 }
 
-fn ListingTable((cx, props): Scope<ListingTableProps>) -> Element {
+fn ListingTable(cx: Context, props: &ListingTableProps) -> Element {
     let rows = ["r1", "r2", "r3", "r1", "r2", "r3"]
         .iter()
         .cycle()
@@ -61,18 +61,10 @@ fn ListingTable((cx, props): Scope<ListingTableProps>) -> Element {
 
             rsx!(
                 tr { class: "text-xs {is_even}",
-                    td { class: "py-5 px-6 font-medium",
-                        "SR2451EW32"
-                    }
-                    td { class: "font-medium",
-                        "08.04.2021"
-                    }
-                    td { class: "font-medium",
-                        "name@shuffle.dev"
-                    }
-                    td { class: "font-medium",
-                        "Monthly"
-                    }
+                    td { class: "py-5 px-6 font-medium", "SR2451EW32" }
+                    td { class: "font-medium", "08.04.2021" }
+                    td { class: "font-medium", "name@shuffle.dev" }
+                    td { class: "font-medium", "Monthly" }
                     td {
                         span { class: "inline-block py-1 px-2 text-white bg-green-500 rounded-full",
                             "Completed"
@@ -91,30 +83,19 @@ fn ListingTable((cx, props): Scope<ListingTableProps>) -> Element {
                             "Recent Transactions"
                         }
                     }
+
                     div { class: "p-4",
                         table { class: "table-auto w-full",
                             thead {
                                 tr { class: "text-xs text-gray-500 text-left",
-                                    th { class: "pb-3 font-medium",
-                                        "Transaction ID"
-                                    }
-                                    th { class: "pb-3 font-medium",
-                                        "Date"
-                                    }
-                                    th { class: "pb-3 font-medium",
-                                        "E-mail"
-                                    }
-                                    th { class: "pb-3 font-medium",
-                                        "Subscription"
-                                    }
-                                    th { class: "pb-3 font-medium",
-                                        "Status"
-                                    }
+                                    th { class: "pb-3 font-medium", "Transaction ID" }
+                                    th { class: "pb-3 font-medium", "Date" }
+                                    th { class: "pb-3 font-medium", "E-mail" }
+                                    th { class: "pb-3 font-medium", "Subscription" }
+                                    th { class: "pb-3 font-medium", "Status" }
                                 }
                             }
-                            tbody {
-                                {rows}
-                            }
+                            tbody { {rows} }
                         }
                         div { class: "text-center mt-5",
                             a { class: "inline-flex items-center text-xs text-indigo-500 hover:text-blue-600 font-medium",
@@ -130,9 +111,7 @@ fn ListingTable((cx, props): Scope<ListingTableProps>) -> Element {
                                         }
                                     }
                                 }
-                                span {
-                                    "Load more transactions"
-                                }
+                                span { "Load more transactions" }
                             }
                         }
                     }

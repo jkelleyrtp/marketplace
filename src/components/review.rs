@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-pub static Review: FC<()> = |(cx, props)| {
+pub static Review: FC<()> = |cx, props| {
     //
     cx.render(rsx!(
         div {

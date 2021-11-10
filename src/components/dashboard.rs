@@ -3,7 +3,7 @@ use uuid::Uuid;
 
 use crate::{plots::salesscatter::SalesScatter, state::use_app_state};
 
-pub static Dashboard: FC<()> = |(cx, props)| {
+pub static Dashboard: FC<()> = |cx, props| {
     log::debug!("Rendeirng Dashboard {:?}", cx.scope_id());
 
     let _state = use_app_state(cx)?;
@@ -20,13 +20,12 @@ pub static Dashboard: FC<()> = |(cx, props)| {
                 }
             }
         }
-        QuickActions {}  
+        QuickActions {}
         FeaturedSearches {}
     ))
 };
 
-
-static QuickActions: FC<()> = |(cx, props)| {
+static QuickActions: FC<()> = |cx, props| {
     cx.render(rsx!(
         section { class: "py-8",
             div { class: "container px-4 mx-auto",
@@ -39,7 +38,7 @@ static QuickActions: FC<()> = |(cx, props)| {
                                         "Important information"
                                     }
                                 }
-                                div { 
+                                div {
                                     h3 { class: "mb-2 text-xl font-bold", "Add new products by searching Amazon" }
                                     p { class: "text-sm text-gray-500",
                                         "You have been invited to join this event. It is only for team members."
@@ -47,7 +46,7 @@ static QuickActions: FC<()> = |(cx, props)| {
                                 }
                             }
                             div { class: "p-6 flex items-center justify-between bg-lightGray-50",
-                                div { 
+                                div {
                                     p { class: "mb-2 text-xs text-gray-500 font-medium",
                                         "Final Date"
                                     }
@@ -70,15 +69,15 @@ static QuickActions: FC<()> = |(cx, props)| {
                                         "Weekly schedule"
                                     }
                                 }
-                                div { 
+                                div {
                                     h3 { class: "mb-2 text-xl font-bold", "Review all products" }
                                     p { class: "text-sm text-gray-500",
                                         "You have been invited to join this event. It is only for team members."
-                                    }                                    
+                                    }
                                 }
                             }
                             div { class: "p-6 flex items-center justify-between bg-lightGray-50",
-                                div { 
+                                div {
                                     p { class: "mb-2 text-xs text-gray-500 font-medium",
                                         "Place"
                                     }
@@ -95,12 +94,11 @@ static QuickActions: FC<()> = |(cx, props)| {
                     }
                 }
             }
-        }        
+        }
     ))
 };
 
-
-static FeaturedSearches: FC<()> = |(cx, props)| {
+static FeaturedSearches: FC<()> = |cx, props| {
     cx.render(rsx!(
         section { class: "py-8",
             div { class: "container px-4 mx-auto",
@@ -117,7 +115,7 @@ static FeaturedSearches: FC<()> = |(cx, props)| {
                                 }
                             }
                             div { class: "flex mb-6 justify-between items-center",
-                                div { 
+                                div {
                                     h3 { class: "text-sm font-medium",
                                         "Shuffle - an online editor"
                                     }
@@ -126,21 +124,21 @@ static FeaturedSearches: FC<()> = |(cx, props)| {
                                     }
                                 }
                                 button { class: "ml-auto p-2 bg-indigo-50 rounded",
-                                    svg { 
+                                    svg {
                                         view_box: "0 0 16 16",
                                         fill: "none",
                                         width: "16",
                                         height: "16",
                                         xmlns: "http://www.w3.org/2000/svg",
-                                        path { 
+                                        path {
                                             d: "M7.99984 9.33335C8.73622 9.33335 9.33317 8.7364 9.33317 8.00002C9.33317 7.26364 8.73622 6.66669 7.99984 6.66669C7.26346 6.66669 6.6665 7.26364 6.6665 8.00002C6.6665 8.7364 7.26346 9.33335 7.99984 9.33335Z",
                                             fill: "#382CDD",
                                         }
-                                        path { 
+                                        path {
                                             fill: "#382CDD",
                                             d: "M3.33333 9.33335C4.06971 9.33335 4.66667 8.7364 4.66667 8.00002C4.66667 7.26364 4.06971 6.66669 3.33333 6.66669C2.59695 6.66669 2 7.26364 2 8.00002C2 8.7364 2.59695 9.33335 3.33333 9.33335Z",
                                         }
-                                        path { 
+                                        path {
                                             d: "M12.6668 9.33335C13.4032 9.33335 14.0002 8.7364 14.0002 8.00002C14.0002 7.26364 13.4032 6.66669 12.6668 6.66669C11.9304 6.66669 11.3335 7.26364 11.3335 8.00002C11.3335 8.7364 11.9304 9.33335 12.6668 9.33335Z",
                                             fill: "#382CDD",
                                         }
@@ -212,7 +210,7 @@ static FeaturedSearches: FC<()> = |(cx, props)| {
                                 }
                             }
                             div { class: "flex mb-6 justify-between items-center",
-                                div { 
+                                div {
                                     h3 { class: "text-sm font-medium",
                                         "Shuffle - an online editor"
                                     }
@@ -221,21 +219,21 @@ static FeaturedSearches: FC<()> = |(cx, props)| {
                                     }
                                 }
                                 button { class: "ml-auto p-2 bg-indigo-50 rounded",
-                                    svg { 
+                                    svg {
                                         width: "16",
                                         view_box: "0 0 16 16",
                                         xmlns: "http://www.w3.org/2000/svg",
                                         height: "16",
                                         fill: "none",
-                                        path { 
+                                        path {
                                             d: "M7.99984 9.33335C8.73622 9.33335 9.33317 8.7364 9.33317 8.00002C9.33317 7.26364 8.73622 6.66669 7.99984 6.66669C7.26346 6.66669 6.6665 7.26364 6.6665 8.00002C6.6665 8.7364 7.26346 9.33335 7.99984 9.33335Z",
                                             fill: "#382CDD",
                                         }
-                                        path { 
+                                        path {
                                             fill: "#382CDD",
                                             d: "M3.33333 9.33335C4.06971 9.33335 4.66667 8.7364 4.66667 8.00002C4.66667 7.26364 4.06971 6.66669 3.33333 6.66669C2.59695 6.66669 2 7.26364 2 8.00002C2 8.7364 2.59695 9.33335 3.33333 9.33335Z",
                                         }
-                                        path { 
+                                        path {
                                             d: "M12.6668 9.33335C13.4032 9.33335 14.0002 8.7364 14.0002 8.00002C14.0002 7.26364 13.4032 6.66669 12.6668 6.66669C11.9304 6.66669 11.3335 7.26364 11.3335 8.00002C11.3335 8.7364 11.9304 9.33335 12.6668 9.33335Z",
                                             fill: "#382CDD",
                                         }
@@ -307,7 +305,7 @@ static FeaturedSearches: FC<()> = |(cx, props)| {
                                 }
                             }
                             div { class: "flex mb-6 justify-between items-center",
-                                div { 
+                                div {
                                     h3 { class: "text-sm font-medium",
                                         "Shuffle - an online editor"
                                     }
@@ -316,21 +314,21 @@ static FeaturedSearches: FC<()> = |(cx, props)| {
                                     }
                                 }
                                 button { class: "ml-auto p-2 bg-indigo-50 rounded",
-                                    svg { 
+                                    svg {
                                         height: "16",
                                         xmlns: "http://www.w3.org/2000/svg",
                                         view_box: "0 0 16 16",
                                         fill: "none",
                                         width: "16",
-                                        path { 
+                                        path {
                                             d: "M7.99984 9.33335C8.73622 9.33335 9.33317 8.7364 9.33317 8.00002C9.33317 7.26364 8.73622 6.66669 7.99984 6.66669C7.26346 6.66669 6.6665 7.26364 6.6665 8.00002C6.6665 8.7364 7.26346 9.33335 7.99984 9.33335Z",
                                             fill: "#382CDD",
                                         }
-                                        path { 
+                                        path {
                                             fill: "#382CDD",
                                             d: "M3.33333 9.33335C4.06971 9.33335 4.66667 8.7364 4.66667 8.00002C4.66667 7.26364 4.06971 6.66669 3.33333 6.66669C2.59695 6.66669 2 7.26364 2 8.00002C2 8.7364 2.59695 9.33335 3.33333 9.33335Z",
                                         }
-                                        path { 
+                                        path {
                                             d: "M12.6668 9.33335C13.4032 9.33335 14.0002 8.7364 14.0002 8.00002C14.0002 7.26364 13.4032 6.66669 12.6668 6.66669C11.9304 6.66669 11.3335 7.26364 11.3335 8.00002C11.3335 8.7364 11.9304 9.33335 12.6668 9.33335Z",
                                             fill: "#382CDD",
                                         }

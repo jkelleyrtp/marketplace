@@ -15,7 +15,7 @@ const ROUTES: &[Routes] = &[
     Routes::Jupyter,
 ];
 
-pub fn NavBar<'a>((cx, props): Scope<'a, NavBarProps>) -> Element {
+pub fn NavBar<'a>(cx: Context, props: &'a NavBarProps) -> Element {
     let state = use_app_state(cx)?;
     let state_read = state.read();
 
@@ -29,9 +29,9 @@ pub fn NavBar<'a>((cx, props): Scope<'a, NavBarProps>) -> Element {
                 a { class: "flex items-center pl-3 py-3 pr-4 text-gray-50 hover:bg-gray-900 rounded",
                     onclick: move |_| set_route(route.clone()),
                     href: "#",
-                    span { 
+                    span {
                         onclick: move |_| set_route(route.clone()),
-                        "{text}" 
+                        "{text}"
                     }
                 }
             }
@@ -47,9 +47,9 @@ pub fn NavBar<'a>((cx, props): Scope<'a, NavBarProps>) -> Element {
                     onclick: move |_| set_route(Routes::ProductPage { search_id: id }),
                     href: "#",
                     span { class: "inline-block mr-3", }
-                    span { 
+                    span {
                         onclick: move |_| set_route(Routes::ProductPage { search_id: id }),
-                        "{v.keyword}" 
+                        "{v.keyword}"
                     }
                 }
             }

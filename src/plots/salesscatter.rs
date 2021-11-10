@@ -12,7 +12,7 @@ pub struct SalesScatterProps {
     yrow: &'static str,
 }
 
-pub fn SalesScatter((cx, props): Scope<SalesScatterProps>) -> Element {
+pub fn SalesScatter(cx: Context, props: &SalesScatterProps) -> Element {
     log::debug!("Rendeirng sales scatter {:?}", cx.scope_id());
 
     let state = use_app_state(cx)?;

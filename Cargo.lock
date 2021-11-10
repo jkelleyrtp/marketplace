@@ -628,7 +628,6 @@ dependencies = [
  "longest-increasing-subsequence",
  "once_cell",
  "serde",
- "serde_repr",
  "slab",
  "smallvec",
 ]
@@ -650,6 +649,7 @@ dependencies = [
  "argh",
  "dioxus-core",
  "dioxus-core-macro",
+ "dioxus-html",
  "futures-channel",
  "html-escape",
  "log",
@@ -672,6 +672,8 @@ name = "dioxus-html"
 version = "0.0.0"
 dependencies = [
  "dioxus-core",
+ "serde",
+ "serde_repr",
 ]
 
 [[package]]
