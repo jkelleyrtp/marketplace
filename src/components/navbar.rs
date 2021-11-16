@@ -1,56 +1,52 @@
+use crate::icons;
+use crate::state::use_app_state;
+use crate::AppRoute;
 use dioxus::prelude::*;
 
-use crate::icons;
-use crate::state::{use_app_state, use_provide_app_state};
-use crate::Routes;
-
-#[derive(Props, PartialEq)]
-pub struct NavBarProps {}
-
-const ROUTES: &[Routes] = &[
-    Routes::Home,
-    Routes::AddNew,
-    Routes::Search,
-    Routes::Review,
-    Routes::Jupyter,
+const ROUTES: &[AppRoute] = &[
+    AppRoute::Home,
+    AppRoute::Search,
+    AppRoute::ImportCsv,
+    AppRoute::Review,
+    AppRoute::Jupyter,
 ];
 
-pub fn NavBar<'a>(cx: Context, props: &'a NavBarProps) -> Element {
+pub fn NavBar(cx: Context, _props: &()) -> Element {
     let state = use_app_state(cx)?;
     let state_read = state.read();
 
     let set_route = move |route| state.write().route = route;
 
     let primaries = ROUTES.iter().map(|route| {
-        let text = route.as_str();
+        let text = match route {
+            AppRoute::Home => "Home",
+            AppRoute::ImportCsv => "Import CSV",
+            AppRoute::Search => "Keyword Search",
+            AppRoute::Review => "Review Products",
+            AppRoute::Jupyter => "Open in Jupyter",
+            AppRoute::Login => "Login",
+            AppRoute::ProductPage { .. } => "Product Page",
+            AppRoute::NotFound => "Err 404. Not Found.",
+        };
         rsx!(
             li {
-                onclick: move |_| set_route(route.clone()),
                 a { class: "flex items-center pl-3 py-3 pr-4 text-gray-50 hover:bg-gray-900 rounded",
                     onclick: move |_| set_route(route.clone()),
                     href: "#",
-                    span {
-                        onclick: move |_| set_route(route.clone()),
-                        "{text}"
-                    }
+                    span { "{text}" }
                 }
             }
         )
     });
 
     let kwords = state_read.cached_data.keywords.iter().map(|(k, v)| {
-        let id = *k;
         rsx!(
             li {
-                onclick: move |_| set_route(Routes::ProductPage { search_id: id }),
                 a { class: "flex items-center pl-3 py-3 pr-2 text-gray-50 hover:bg-gray-900 rounded",
-                    onclick: move |_| set_route(Routes::ProductPage { search_id: id }),
+                    onclick: move |_| set_route(AppRoute::ProductPage { search_id: *k }),
                     href: "#",
                     span { class: "inline-block mr-3", }
-                    span {
-                        onclick: move |_| set_route(Routes::ProductPage { search_id: id }),
-                        "{v.keyword}"
-                    }
+                    span { "{v.keyword}" }
                 }
             }
         )
@@ -73,11 +69,14 @@ pub fn NavBar<'a>(cx: Context, props: &'a NavBarProps) -> Element {
                     h3 { class: "mb-2 text-xs uppercase text-gray-500 font-medium", "Main" }
                     ul { class: "mb-8 text-sm font-medium", {primaries} }
                     h3 { class: "mb-2 text-xs uppercase text-gray-500 font-medium", "Searches" }
-                    ul { class: "text-sm font-medium", {kwords} }
+                    ul {
+                        class: "text-sm font-medium",
+                        {kwords}
+                    }
                     div { class: "pt-8",
                         a { class: "flex items-center pl-3 py-3 pr-2 text-gray-50 hover:bg-gray-900 rounded",
                             href: "#",
-                            span { class: "inline-block mr-4", icons::Settings {}    }
+                            span { class: "inline-block mr-4", icons::Settings {} }
                             span { "Settings" }
                         }
                         a { class: "flex items-center pl-3 py-3 pr-2 text-gray-50 hover:bg-gray-900 rounded",

@@ -3,10 +3,10 @@ use std::collections::HashMap;
 use dioxus::prelude::*;
 use uuid::Uuid;
 
-use crate::{helium10::FlattenedEntry, Routes};
+use crate::{helium10::FlattenedEntry, AppRoute};
 
 pub struct AppState {
-    pub route: Routes,
+    pub route: AppRoute,
     pub current_user: Option<Uuid>,
     pub cached_data: CachedData,
 }
@@ -37,20 +37,10 @@ impl AppState {
         let file = std::fs::read_to_string("db/db.json").expect("couldn't find launch db");
         let cached_data: CachedData = serde_json::from_str(&file).unwrap();
 
-        let current_user = if cfg!(debug_assertions) {
-            Some(Uuid::parse_str("c826b6d2-1e2a-473e-80ac-9d00133d15ad").unwrap())
-        } else {
-            None
-        };
-
-        let route = if cfg!(debug_assertions) {
-            Routes::Home
-        } else {
-            Routes::Login
-        };
+        let current_user = Some(Uuid::parse_str("c826b6d2-1e2a-473e-80ac-9d00133d15ad").unwrap());
 
         Self {
-            route,
+            route: AppRoute::Home,
             cached_data,
             current_user,
         }

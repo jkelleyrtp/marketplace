@@ -5,7 +5,7 @@ use dioxus::prelude::*;
 use crate::{
     helium10::FlattenedEntry,
     state::{use_app_state, KeywordEntry},
-    Routes,
+    AppRoute,
 };
 
 use csv;
@@ -28,7 +28,7 @@ pub static AddNew: FC<()> = |cx, props| {
         }
 
         let mut st = state.write();
-        st.route = Routes::Home;
+        st.route = AppRoute::Home;
         st.cached_data.keywords.insert(
             uuid::Uuid::new_v4(),
             KeywordEntry {
@@ -58,7 +58,7 @@ pub static AddNew: FC<()> = |cx, props| {
                                     id: "name",
                                     r#type: "text",
                                     name: "name",
-                                    oninput: move |e| name.set(e.value),
+                                    oninput: move |e| name.set(e.value.clone()),
                                 }
                             }
                         }
@@ -72,7 +72,7 @@ pub static AddNew: FC<()> = |cx, props| {
                                     id: "message",
                                     name: "message",
                                     ""
-                                    oninput: move |e| contents.set(e.value),
+                                    oninput: move |e| contents.set(e.value.clone()),
                                 }
                             }
                         }

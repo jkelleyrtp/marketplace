@@ -1,0 +1,397 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'amazon_isr'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "amazon_isr",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'single'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=single",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "single",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'single'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=single",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "single",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'parse_scraper'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=parse_scraper",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "parse_scraper",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'parse_scraper'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=parse_scraper",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "parse_scraper",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'server'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=server",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "server",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'server'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=server",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "server",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'serde_asins'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=serde_asins",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "serde_asins",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'serde_asins'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=serde_asins",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "serde_asins",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'desktop'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=desktop",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "desktop",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'desktop'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=desktop",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "desktop",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'har'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=har",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "har",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'har'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=har",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "har",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'scrape'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=scrape",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "scrape",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'scrape'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=scrape",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "scrape",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'scrape_and_save'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=scrape_and_save",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "scrape_and_save",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'scrape_and_save'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=scrape_and_save",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "scrape_and_save",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'add_from_csv'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=add_from_csv",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "add_from_csv",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'add_from_csv'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=add_from_csv",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "add_from_csv",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'app_plots'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=app_plots",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "app_plots",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'app_plots'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=app_plots",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "app_plots",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
