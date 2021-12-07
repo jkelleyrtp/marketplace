@@ -1,106 +1,113 @@
-use crate::{actions, helium10};
+use crate::actions::{fetch_asins_from_keyword, fetch_helium_10_from_asins, FetchError};
+use crate::helium10::ProductResponse;
+use crate::state::{use_app_state, GlobalModel, KeywordEntry};
 use dioxus::prelude::*;
-use std::collections::HashMap;
-use tokio::sync::futures;
+use uuid::Uuid;
 
-use crate::{
-    helium10::FlattenedEntry,
-    state::{use_app_state, KeywordEntry},
-    AppRoute,
-};
+#[derive(Debug)]
+pub enum SearchState {
+    Nothing,
+    Loading { msg: Option<String> },
+    Error { msg: FetchError },
+    Loaded,
+}
 
-pub fn Search(cx: Context, props: &()) -> Element {
-    log::debug!("Rendeirng AddNew {:?}", cx.scope_id());
+pub fn Search(cx: Context, _props: &()) -> Element {
+    let loading_state = use_state(cx, || SearchState::Nothing);
+    let keyword = use_state(cx, || "".to_string());
+    let current_result_entry = use_state(cx, || None);
+    let app_state = use_app_state(cx)?;
 
-    let mut state = use_app_state(cx)?;
-    let mut kword = use_state(cx, String::new);
-    let mut contents = use_state(cx, String::new);
-    let cur_user = state.read().current_user?;
+    let fetch_task = use_coroutine(cx, move || {
+        // The task will persist between renders, so we need to make sure we're
+        // never dealing with stale versions of state
+        let mut loading_state = loading_state.for_async();
+        let mut selected_product = current_result_entry.for_async();
 
-    let (asins, set_asins) = use_state(cx, || Vec::<String>::new()).classic();
+        let creator = app_state.read().current_user.clone();
+        let keyword = keyword.inner();
+        let app_state = app_state.inner();
 
-    log::debug!("new asins are {:?}", asins);
+        log::info!("starting coroutine");
 
-    let search_for_asins = move |_| {
-        let set_asins2 = set_asins.clone();
-        // let mut asins = asins.for_async();
-        // let rt = tokio::runtime::Handle::current();
-        let update = cx.schedule_update();
+        async move {
+            loading_state.set(SearchState::Loading {
+                msg: Some("Fetching products from Amazon".to_string()),
+            });
 
-        let word = (*kword).clone();
+            // Fetch the data
+            let client = reqwest::Client::builder().build().unwrap();
 
-        cx.push_task(|| async move {
-            //
-            let new_asins = actions::fetch_asins_from_keyword(&word).await.unwrap();
-            dbg!("new asins fetched are {:?}", &new_asins);
-            set_asins2(new_asins);
-            update();
-        });
-    };
+            let new_asins = fetch_asins_from_keyword(&client, &keyword).await.unwrap();
 
-    let rows = asins.iter().enumerate().map(|(id, asin)| {
-        //
-        let is_even = if id % 2 == 0 { "bg-gray-50" } else { "" };
+            loading_state.set(SearchState::Loading {
+                msg: Some("Fetching data from Helium 10".to_string()),
+            });
 
-        rsx!(
-            tr { class: "text-xs {is_even}",
-                td { class: "py-5 px-6 font-medium", "{asin}" }
-                td { class: "font-medium", "08.04.2021" }
-                td { class: "font-medium", "name@shuffle.dev" }
-                td { class: "font-medium", "Monthly" }
-                td {
-                    span { class: "inline-block py-1 px-2 text-white bg-green-500 rounded-full",
-                        "Completed"
-                    }
+            let products = match fetch_helium_10_from_asins(&client, &new_asins).await {
+                Ok(p) => p,
+                Err(e) => {
+                    loading_state.set(SearchState::Error { msg: e });
+                    return;
                 }
-            }
-        )
+            };
+
+            let products = products
+                .data
+                .into_iter()
+                .filter_map(|(asin, product)| match product {
+                    ProductResponse::Success(product) => Some((asin, product)),
+                    ProductResponse::Error(_) => None,
+                })
+                .collect();
+
+            // Create the new entry and add it to the global state
+            let id = Uuid::new_v4();
+            app_state.borrow_mut().write().keywords.insert(
+                id,
+                KeywordEntry {
+                    creator: creator.unwrap(),
+                    keyword,
+                    products,
+                },
+            );
+
+            // and default the selection
+            loading_state.set(SearchState::Loaded);
+            selected_product.set(Some(id));
+        }
     });
 
-    cx.render(rsx!{
+    let loading_msg = match loading_state.get() {
+        SearchState::Nothing => rsx!(""),
+        SearchState::Loading { msg } => rsx!({ [format_args!("Loading... {:?}", msg)] }),
+        SearchState::Loaded => rsx!("Loaded!"),
+        SearchState::Error { msg } => rsx!("an error occoured!"),
+    };
+
+    cx.render(rsx! {
         section { class: "text-gray-600 body-font relative",
             div { class: "container px-5 py-24 mx-auto",
-                div { class: "flex flex-col text-center w-full mb-12",
-                    h1 { class: "sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900", "Search Amazon for Keywords" }
-                    p { class: "lg:w-2/3 mx-auto leading-relaxed text-base", "Add your keywords here to search for amazon data" }
-                }
+                {page_title(cx)}
                 div { class: "lg:w-1/2 md:w-2/3 mx-auto",
                     div { class: "flex flex-wrap -m-2",
-                        // Keyword entry
-                        div { class: "p-2 w-1/2",
-                            div { class: "relative",
-                                label { class: "leading-7 text-sm text-gray-600",
-                                    r#for: "name",
-                                    "Search keyword"
-                                }
-                                input { class: "w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out",
-                                    id: "name",
-                                    r#type: "text",
-                                    name: "name",
-                                    oninput: move |e| kword.set(e.value.clone()),
-                                }
-                            }
-                        }
+                        div { class: "p-2 w-1/2", {search_box(cx, keyword)} }
+
                         div { class: "p-2 w-full",
                             table { class: "table-auto w-full",
-                                thead {
-                                    tr { class: "text-xs text-gray-500 text-left",
-                                        th { class: "pb-3 font-medium", "Transaction ID" }
-                                        th { class: "pb-3 font-medium", "Date" }
-                                        th { class: "pb-3 font-medium", "E-mail" }
-                                        th { class: "pb-3 font-medium", "Subscription" }
-                                        th { class: "pb-3 font-medium", "Status" }
-                                    }
+                                {table_header(cx)}
+                                tbody {
+                                    {product_rows(cx, current_result_entry, app_state)}
                                 }
-                                tbody { {rows} }
                             }
                         }
 
-                        // Submit
+                        {loading_msg}
+
                         div { class: "p-2 w-full",
                             button { class: "flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg",
-                                "Search Products"
-                                onclick: {search_for_asins}
+                                "Download Helium10 Data"
+                                onclick: move |_| fetch_task.start(),
                             }
                         }
                     }
@@ -110,26 +117,74 @@ pub fn Search(cx: Context, props: &()) -> Element {
     })
 }
 
-// let submit = move |_| {
-//     let word = (*kword).clone();
-//     let (_, mut set_asins) = asins.split_for_async();
-//     let contents = contents.for_async();
-//     let h = tokio::task::spawn_local(async move {
-//         let asins = actions::fetch_asins_from_keyword(&word).await.unwrap();
-//         set_asins.set(asins.clone());
+fn product_rows(
+    cx: Context,
+    cur_product: UseState<Option<Uuid>>,
+    state: UseSharedState<GlobalModel>,
+) -> Element {
+    cur_product.and_then(|p| {
+        let state = state.read();
+        let product = state.keywords.get(&p).unwrap();
 
-//         let res = actions::fetch_helium_10_from_asins(&asins).await.unwrap();
+        let products = product.products.values().enumerate().map(|(idx, product)| {
+            let is_even = if idx % 2 == 0 { "bg-gray-50" } else { "" };
+            let asin = &product.asin;
+            let Product_Details = "";
+            rsx!(
+                tr { class: "text-xs {is_even}", key: "{asin}"
+                    td { class: "py-5 px-6 font-medium", "{asin}" }
+                    td { class: "font-medium", "{Product_Details}" }
+                    td { class: "font-medium", "name@shuffle.dev" }
+                    td { class: "font-medium", "Monthly" }
+                    td {
+                        span { class: "inline-block py-1 px-2 text-white bg-green-500 rounded-full",
+                            "Completed"
+                        }
+                    }
+                }
+            )
+        });
 
-//         let fname = word.replace(" ", "_");
+        cx.render(rsx!({ products }))
+    })
+}
 
-//         let serialized = serde_json::to_string(&res).unwrap();
-//         std::fs::write(format!("./data/{}.json", fname), serialized).unwrap();
+fn search_box(cx: Context, keyword: UseState<String>) -> Element {
+    cx.render(rsx!(
+        div { class: "relative",
+            label { class: "leading-7 text-sm text-gray-600",
+                r#for: "name",
+                "Search keyword"
+            }
+            input { class: "w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out",
+                id: "name",
+                r#type: "text",
+                name: "name",
+                oninput: move |e| keyword.set(e.value.clone()),
+            }
+        }
+    ))
+}
 
-//         // let flattned = res.to_flattened();
-//         let entries = res
-//             .data
-//             .into_iter()
-//             .map(|(k, v)| (k, v.data.flatten()))
-//             .collect::<HashMap<_, _>>();
-//     });
-// };
+fn page_title(cx: Context) -> Element {
+    cx.render(rsx!(
+        div { class: "flex flex-col text-center w-full mb-12",
+            h1 { class: "sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900", "Search Amazon for Keywords" }
+            p { class: "lg:w-2/3 mx-auto leading-relaxed text-base", "Add your keywords here to search for amazon data" }
+        }
+    ))
+}
+
+fn table_header(cx: Context) -> Element {
+    cx.render(rsx!(
+        thead {
+            tr { class: "text-xs text-gray-500 text-left",
+                th { class: "pb-3 font-medium", "Transaction ID" }
+                th { class: "pb-3 font-medium", "Date" }
+                th { class: "pb-3 font-medium", "E-mail" }
+                th { class: "pb-3 font-medium", "Subscription" }
+                th { class: "pb-3 font-medium", "Status" }
+            }
+        }
+    ))
+}

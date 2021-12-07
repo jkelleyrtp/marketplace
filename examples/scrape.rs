@@ -34,9 +34,9 @@ async fn main() -> anyhow::Result<()> {
 
     // <div data-asin="B08P6XV7YC"
 
-    // let mut f = std::fs::File::create("data/scrape.html").unwrap();
+    let mut f = std::fs::File::create("data/scrape.html").unwrap();
 
-    // f.write_all(accounts_res.as_bytes()).unwrap();
+    f.write_all(accounts_res.as_bytes()).unwrap();
 
     Ok(())
     // .headers(headers)

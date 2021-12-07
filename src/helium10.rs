@@ -4,7 +4,7 @@ use std::collections::HashMap;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct InvocationResponse {
     pub hash: String,
-    pub left: usize,
+    pub left: isize,
     pub plan: String,
     pub errorMsg: String,
 }
@@ -12,14 +12,20 @@ pub struct InvocationResponse {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ProductListResponse {
     pub status: String,
-    pub left: usize,
+    pub left: isize,
     pub total: String,
     pub data: HashMap<String, ProductResponse>,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ProductResponse {
-    pub status: String,
-    pub data: ProductListing,
+#[serde(tag = "status", content = "data")]
+
+pub enum ProductResponse {
+    #[serde(rename = "success")]
+    Success(ProductListing),
+
+    #[serde(rename = "error")]
+    Error(serde_json::Value),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -29,72 +35,51 @@ pub struct ProductListing {
     pub marketplace: String,
     pub category: CategoryData,
     pub productData: ProductData,
+    pub bsrHistory: BsrHistory,
     pub salesHistory: SalesHistory,
+    pub reviewHistory: HashMap<String, ReviewPoint>,
 }
 
-impl ProductListing {
-    pub fn flatten(self) -> FlattenedEntry {
-        let ProductListing {
-            requestId,
-            asin,
-            marketplace,
-            category,
-            productData,
-            salesHistory,
-        } = self;
-        FlattenedEntry {
-            Product_Details: todo!(),
-            ASIN: asin,
-            Brand: todo!(),
-            Price: todo!(),
-            Sales: todo!(),
-            Revenue: todo!(),
-            BSR: todo!(),
-            FBA_Fees: todo!(),
-            Active_Sellers: todo!(),
-            Ratings: todo!(),
-            Review_Count: todo!(),
-            Images: todo!(),
-            Review_velocity: todo!(),
-            Buy_Box: todo!(),
-            Category: todo!(),
-            Size_Tier: todo!(),
-            Delivery: todo!(),
-            Dimensions: todo!(),
-            Weight: todo!(),
-            Creation_Date: todo!(),
-        }
-    }
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BsrHistory {
+    pub history: Option<HashMap<String, usize>>,
+    pub minDate: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ReviewPoint {
+    pub count: f64,
+    pub rating: f64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CategoryData {
-    pub id: usize,
+    pub id: isize,
     pub name: String,
     pub isCategoryBsr: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ProductData {
-    pub sellerType: usize,
-    pub sellersNumber: usize,
+    pub sellerType: isize,
+    pub sellersNumber: isize,
     pub title: String,
     pub imageUrl: String,
-    pub bsr: usize,
-    pub price: f32,
-    pub fbaFee: usize,
-    pub mfnFee: usize,
+    pub bsr: isize,
+    pub price: f64,
+    pub fbaFee: isize,
+    pub mfnFee: isize,
     pub dimensions: serde_json::Value,
-    pub sizeTier: usize,
-    pub numberOfImages: usize,
-    pub numberOfVariations: usize,
-    pub age: usize,
+    pub sizeTier: isize,
+    pub numberOfImages: isize,
+    pub numberOfVariations: isize,
+    pub age: isize,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SalesHistory {
-    pub history: HashMap<String, f32>,
-    pub minDate: String,
+    pub history: Option<HashMap<String, f64>>,
+    pub minDate: Option<String>,
     pub last30DaysSales: isize,
     pub peak: bool,
     pub last12MonthsSales: isize,
@@ -104,49 +89,12 @@ pub struct SalesHistory {
     pub last90DaysPriceTrend: isize,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct FlattenedEntry {
-    #[serde(rename = "Product Details")]
-    pub Product_Details: String,
-    pub ASIN: String,
-    pub Brand: String,
-    pub Price: String,
-    pub Sales: String,
-    pub Revenue: String,
-    pub BSR: String,
-
-    #[serde(rename = "FBA Fees")]
-    pub FBA_Fees: String,
-
-    #[serde(rename = "Active Sellers #")]
-    pub Active_Sellers: String,
-
-    pub Ratings: String,
-
-    #[serde(rename = "Review Count")]
-    pub Review_Count: String,
-
-    pub Images: String,
-
-    #[serde(rename = "Review velocity")]
-    pub Review_velocity: String,
-
-    #[serde(rename = "Buy Box")]
-    pub Buy_Box: String,
-
-    pub Category: String,
-
-    #[serde(rename = "Size Tier")]
-    pub Size_Tier: String,
-
-    pub Delivery: String,
-
-    pub Dimensions: String,
-
-    pub Weight: String,
-
-    #[serde(rename = "Creation Date")]
-    pub Creation_Date: String,
+pub fn calculate_review_velocity(data: &ProductListing) -> f64 {
+    let mut sum = 0.0;
+    for (_, point) in &data.reviewHistory {
+        sum += point.count;
+    }
+    sum / data.reviewHistory.len() as f64
 }
 
 #[test]

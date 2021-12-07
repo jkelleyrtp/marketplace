@@ -13,8 +13,8 @@ const ROUTES: &[AppRoute] = &[
 
 pub fn NavBar(cx: Context, _props: &()) -> Element {
     let state = use_app_state(cx)?;
-    let state_read = state.read();
 
+    let state_read = state.read();
     let set_route = move |route| state.write().route = route;
 
     let primaries = ROUTES.iter().map(|route| {
@@ -29,7 +29,7 @@ pub fn NavBar(cx: Context, _props: &()) -> Element {
             AppRoute::NotFound => "Err 404. Not Found.",
         };
         rsx!(
-            li {
+            li { key: "{text}"
                 a { class: "flex items-center pl-3 py-3 pr-4 text-gray-50 hover:bg-gray-900 rounded",
                     onclick: move |_| set_route(route.clone()),
                     href: "#",
@@ -39,9 +39,9 @@ pub fn NavBar(cx: Context, _props: &()) -> Element {
         )
     });
 
-    let kwords = state_read.cached_data.keywords.iter().map(|(k, v)| {
+    let kwords = state_read.keywords.iter().map(|(k, v)| {
         rsx!(
-            li {
+            li { key: "{k}"
                 a { class: "flex items-center pl-3 py-3 pr-2 text-gray-50 hover:bg-gray-900 rounded",
                     onclick: move |_| set_route(AppRoute::ProductPage { search_id: *k }),
                     href: "#",

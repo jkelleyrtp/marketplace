@@ -1,6 +1,5 @@
 use crate::components;
 use dioxus::prelude::*;
-use dioxus::router::{use_router, Routable};
 use uuid::Uuid;
 
 use crate::state::use_provide_app_state;
@@ -26,16 +25,12 @@ pub enum AppRoute {
     NotFound,
 }
 
-pub fn App(cx: Context, props: &()) -> Element {
+pub fn App(cx: Context, _props: &()) -> Element {
     let st = use_provide_app_state(cx);
-    let s = st.read();
-    let route = &s.route;
-
-    // let route = use_router(cx, |f| AppRoute::Home)?;
 
     cx.render(rsx! {
         div { class: "mx-auto lg:ml-80",
-            {match route {
+            {match &st.read().route {
                 AppRoute::Login => rsx! {
                     components::Login {}
                 },
@@ -45,7 +40,7 @@ pub fn App(cx: Context, props: &()) -> Element {
                 },
                 AppRoute::ImportCsv => rsx! {
                     components::NavBar {}
-                    components::AddNew {}
+                    "currently cannot import csv"
                 },
                 AppRoute::Search => rsx! {
                     components::NavBar {}

@@ -1,0 +1,194 @@
+{
+    "191609a2-2261-48fa-9701-1642e7936159": {
+        "keyword": "floating wall shelves",
+        "creator": "c826b6d2-1e2a-473e-80ac-9d00133d15ad",
+        "products": {
+            "B08NK5FBWV": {
+                "requestId": "0d9464757b5bbcd5036bca311f9f929b",
+                "asin": "B08NK5FBWV",
+                "marketplace": "ATVPDKIKX0DER",
+                "category": {
+                    "id": 17,
+                    "name": "Home & Kitchen",
+                    "isCategoryBsr": true
+                },
+                "productData": {
+                    "sellerType": 2,
+                    "sellersNumber": 1,
+                    "title": "Set of 2 Wall Mounted Pine Wood Floating Shelves, Elegant Gold Geometric Wall Decor Organizers & Storage Display Shelves for Bedroom, Bathroom, Living Room, Kitchen, Office & Laundry Room",
+                    "imageUrl": "https://m.media-amazon.com/images/I/41g0kSa0sDL._SX450_.jpg",
+                    "bsr": 342497,
+                    "price": 26.99,
+                    "fbaFee": 1063,
+                    "mfnFee": 405,
+                    "dimensions": {
+                        "width": 7.0078740086,
+                        "length": 16.1811023457,
+                        "height": 6.7322834577,
+                        "weight": 2.77561987858
+                    },
+                    "sizeTier": 2,
+                    "numberOfImages": 7,
+                    "numberOfVariations": 0,
+                    "age": 1632748320
+                },
+                "bsrHistory": {
+                    "history": {
+                        "2021-09-28": 597187,
+                        "2021-09-29": 794945,
+                        "2021-09-30": 441014,
+                        "2021-10-01": 420585,
+                        "2021-10-02": 503754,
+                        "2021-10-03": 242097
+                    },
+                    "minDate": "2021-09-28"
+                },
+                "salesHistory": {
+                    "history": {
+                        "2021-09-28": 0.5,
+                        "2021-09-29": 0.05,
+                        "2021-09-30": 1.12,
+                        "2021-10-01": 1.23,
+                        "2021-10-02": 0.83,
+                        "2021-10-03": 2.9
+                    },
+                    "minDate": "2021-09-28",
+                    "last30DaysSales": 7,
+                    "peak": false,
+                    "last12MonthsSales": -1,
+                    "last12MonthsChange": -1,
+                    "bestMonth": "2021-10",
+                    "last90DaysSalesTrend": -1,
+                    "last90DaysPriceTrend": 0
+                },
+                "reviewHistory": {
+                    "2021-09-05": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-06": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-07": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-08": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-09": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-10": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-11": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-12": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-13": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-14": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-15": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-16": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-17": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-18": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-19": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-20": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-21": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-22": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-23": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-24": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-25": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-26": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-27": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-28": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-29": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-09-30": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-10-01": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-10-02": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-10-03": {
+                        "count": 0,
+                        "rating": 0
+                    },
+                    "2021-10-04": {
+                        "count": 0,
+                        "rating": 0
+                    }
+                },
+                "error": [],
+                "coefficient": [],
+                "originalAsinData": [],
+                "isParentData": false,
+                "kData": false
+            }
+        }
+    }
+}

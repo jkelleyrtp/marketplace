@@ -4,4 +4,3 @@ An OpenSource app for exploring the Amazon marketplace with the Helium10 API. Us
 
 Is currently a "LiveView" app - the server and the client are entirely the same.
 
-

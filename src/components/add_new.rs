@@ -10,7 +10,7 @@ use crate::{
 
 use csv;
 
-pub static AddNew: FC<()> = |cx, props| {
+pub static AddNew: Component<()> = |cx, props| {
     log::debug!("Rendeirng AddNew {:?}", cx.scope_id());
 
     let mut state = use_app_state(cx)?;
@@ -29,7 +29,7 @@ pub static AddNew: FC<()> = |cx, props| {
 
         let mut st = state.write();
         st.route = AppRoute::Home;
-        st.cached_data.keywords.insert(
+        st.keywords.insert(
             uuid::Uuid::new_v4(),
             KeywordEntry {
                 creator: cur_user,

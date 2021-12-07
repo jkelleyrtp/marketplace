@@ -1,31 +1,27 @@
 use dioxus::prelude::*;
 use uuid::Uuid;
 
-use crate::{plots::salesscatter::SalesScatter, state::use_app_state};
+use crate::{plots::salesscatter::Plots, state::use_app_state};
 
-pub static Dashboard: FC<()> = |cx, props| {
+pub static Dashboard: Component<()> = |cx, props| {
     log::debug!("Rendeirng Dashboard {:?}", cx.scope_id());
 
     let _state = use_app_state(cx)?;
     let state = _state.read();
 
     let user_id = state.current_user.as_ref().unwrap();
-    let name = &state.cached_data.users.get(user_id).unwrap().name;
+    let name = &state.users.get(user_id).unwrap().name;
 
     cx.render(rsx!(
         div { class: "py-8 px-6",
-            div { class: "container px-4 mx-auto",
-                h2 { class: "text-2xl font-bold",
-                    "Welcome, {name} 👋"
-                }
-            }
+            div { class: "container px-4 mx-auto", h2 { class: "text-2xl font-bold", "Welcome, {name} 👋" } }
         }
         QuickActions {}
         FeaturedSearches {}
     ))
 };
 
-static QuickActions: FC<()> = |cx, props| {
+static QuickActions: Component<()> = |cx, props| {
     cx.render(rsx!(
         section { class: "py-8",
             div { class: "container px-4 mx-auto",
@@ -98,10 +94,11 @@ static QuickActions: FC<()> = |cx, props| {
     ))
 };
 
-static FeaturedSearches: FC<()> = |cx, props| {
+static FeaturedSearches: Component<()> = |cx, props| {
     cx.render(rsx!(
         section { class: "py-8",
             div { class: "container px-4 mx-auto",
+                h2 { class: "text-2xl font-bold", "Recent Searches" }
                 div { class: "flex flex-wrap -m-4",
                     div { class: "w-full lg:w-1/3 p-4",
                         div { class: "p-4 bg-white rounded",

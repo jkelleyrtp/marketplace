@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-pub static Jupyter: FC<()> = |cx, props| {
+pub static Jupyter: Component<()> = |cx, props| {
     //
     cx.render(rsx!(
         div {
