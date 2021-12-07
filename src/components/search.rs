@@ -45,21 +45,20 @@ pub fn Search(cx: Context, _props: &()) -> Element {
             });
 
             let products = match fetch_helium_10_from_asins(&client, &new_asins).await {
-                Ok(p) => p,
+                Ok(products) => products
+                    .data
+                    .into_iter()
+                    .filter_map(|(asin, product)| match product {
+                        ProductResponse::Success(product) => Some((asin, product)),
+                        ProductResponse::Error(_) => None,
+                    })
+                    .collect(),
+
                 Err(e) => {
                     loading_state.set(SearchState::Error { msg: e });
                     return;
                 }
             };
-
-            let products = products
-                .data
-                .into_iter()
-                .filter_map(|(asin, product)| match product {
-                    ProductResponse::Success(product) => Some((asin, product)),
-                    ProductResponse::Error(_) => None,
-                })
-                .collect();
 
             // Create the new entry and add it to the global state
             let id = Uuid::new_v4();

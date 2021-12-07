@@ -8,6 +8,13 @@ use std::{
 use uuid::Uuid;
 
 use crate::{helium10::ProductListing, AppRoute};
+use atoms::prelude::*;
+
+pub static Route: Atom<AppRoute> = || AppRoute::Home;
+pub static CurrentUser: Atom<Option<Uuid>> = || None;
+pub static Users: AtomFamily<Uuid, User> = |_| Default::default();
+pub static Keywords: AtomFamily<Uuid, KeywordEntry> = |_| Default::default();
+pub static Products: AtomFamily<String, ProductListing> = |_| Default::default();
 
 pub struct GlobalModel {
     pub route: AppRoute,
