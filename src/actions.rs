@@ -1,9 +1,7 @@
 use crate::helium10::*;
-use crate::state::KeywordEntry;
 use reqwest::header::COOKIE;
 use scraper::{Html, Selector};
 use thiserror::Error;
-use uuid::Uuid;
 
 #[derive(Error, Debug)]
 pub enum FetchError {
@@ -12,6 +10,9 @@ pub enum FetchError {
 
     #[error("Failed to parse: {0}")]
     FailedToParse(#[from] serde_json::Error),
+
+    #[error("No credits left")]
+    OutOfCredits,
 }
 
 /// Scrape the amazon search page to find all the asins related to a search term
@@ -81,9 +82,7 @@ pub async fn fetch_helium_10_from_asins(
     // Declare that we're going to make a series of requests to a server
     // Sets a cookie that will be used by the server to track the number of requests
     // Returns a hash that we'll use for future product requests.
-    let InvocationResponse {
-        hash, ..
-    } = client
+    let response = client
         .post("https://members.helium10.com/black-box/invocations?accountId=1544530874")
         .form(&[
             (("appId"), ("njmehopjdpcckochcggncklnlmikcbnb")),
@@ -96,6 +95,12 @@ pub async fn fetch_helium_10_from_asins(
         .json::<InvocationResponse>()
         .await?;
 
+    if response.left == 0 {
+        return Err(FetchError::OutOfCredits);
+    }
+
+    log::debug!("{:?}", response);
+
     // Query the data of a single product
     // todo: see if we can query multiple products with one call
     let product = client
@@ -104,13 +109,15 @@ pub async fn fetch_helium_10_from_asins(
         .form(&[
             (("asins"), (serde_json::to_string(&asins).unwrap().as_str())),
             (("marketplace"), ("ATVPDKIKX0DER")),
-            (("hash"), (&hash)),
+            (("hash"), (&response.hash)),
             (("platform"), ("amazon")),
         ])
         .send()
         .await?;
 
     let raw_product = product.json::<serde_json::Value>().await?;
+
+    log::debug!("{:?}", raw_product);
 
     let resp = serde_json::from_value::<ProductListResponse>(raw_product)?;
     Ok(resp)

@@ -26,7 +26,7 @@ pub enum AppRoute {
 
 pub fn App(cx: Context, _props: &()) -> Element {
     use_init_atom_root(cx);
-    let route = use_read(cx, crate::state::Route);
+    let route = use_read(cx, crate::state::ROUTE);
 
     cx.render(rsx! {
         div { class: "mx-auto lg:ml-80",

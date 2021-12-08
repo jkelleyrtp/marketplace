@@ -3,12 +3,14 @@
         "id": "c826b6d2-1e2a-473e-80ac-9d00133d15ad",
         "name": "Jon",
         "email": "jkelley@olin.edu",
-        "password": "jkelley"
+        "password": "jkelley",
+        "credits": 0
     },
     "58310e23-fc73-40f9-b58a-f965391b5706": {
         "id": "58310e23-fc73-40f9-b58a-f965391b5706",
         "name": "Lawrence",
         "email": "lawrence@olin.edu",
-        "password": "lawrence"
+        "password": "lawrence",
+        "credits": 0
     }
 }

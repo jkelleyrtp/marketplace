@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use crate::actions::{fetch_asins_from_keyword, fetch_helium_10_from_asins, FetchError};
 use crate::helium10::ProductResponse;
 use crate::state::{use_keyword_entry, KeywordEntry};
-use atoms::use_read;
 use dioxus::prelude::*;
 use uuid::Uuid;
 
@@ -19,7 +18,10 @@ pub fn Search(cx: Context, _props: &()) -> Element {
     let loading_state = use_state(cx, || SearchState::Nothing);
     let keyword = use_state(cx, || "".to_string());
     let current_result_entry = use_state(cx, || None);
-    let current_user = use_read(cx, crate::state::CurrentUser);
+
+    let current_user = atoms::use_read(cx, crate::state::CURRENT_USER);
+    let keywords_entries = atoms::use_read(cx, crate::state::KEYWORDS);
+    let set_entries = atoms::use_set(cx, crate::state::KEYWORDS);
 
     let fetch_task = use_coroutine(cx, move || {
         // The task will persist between renders, so we need to make sure we're
@@ -29,6 +31,8 @@ pub fn Search(cx: Context, _props: &()) -> Element {
 
         let creator = current_user.clone();
         let keyword = keyword.inner();
+        let mut new_entries = keywords_entries.clone();
+        let set_entries = set_entries.clone();
 
         async move {
             loading_state.set(SearchState::Loading {
@@ -39,6 +43,8 @@ pub fn Search(cx: Context, _props: &()) -> Element {
             let client = reqwest::Client::builder().build().unwrap();
 
             let new_asins = fetch_asins_from_keyword(&client, &keyword).await.unwrap();
+
+            log::debug!("Fetched asins {:?}", new_asins);
 
             loading_state.set(SearchState::Loading {
                 msg: Some("Fetching data from Helium 10".to_string()),
@@ -62,15 +68,15 @@ pub fn Search(cx: Context, _props: &()) -> Element {
 
             // Create the new entry and add it to the global state
             let id = Uuid::new_v4();
-            todo!();
-            // app_state.borrow_mut().write().keywords.insert(
-            //     id,
-            //     KeywordEntry {
-            //         creator: creator.unwrap(),
-            //         keyword,
-            //         products,
-            //     },
-            // );
+            new_entries.insert(
+                id,
+                KeywordEntry {
+                    creator: creator.unwrap(),
+                    keyword,
+                    products,
+                },
+            );
+            set_entries(new_entries);
 
             // and default the selection
             loading_state.set(SearchState::Loaded);
@@ -82,7 +88,11 @@ pub fn Search(cx: Context, _props: &()) -> Element {
         SearchState::Nothing => rsx!(""),
         SearchState::Loading { msg } => rsx!({ [format_args!("Loading... {:?}", msg)] }),
         SearchState::Loaded => rsx!("Loaded!"),
-        SearchState::Error { msg } => rsx!("an error occoured!"),
+        SearchState::Error { msg } => match msg {
+            FetchError::Reqwest(err) => todo!(),
+            FetchError::FailedToParse(err) => todo!(),
+            FetchError::OutOfCredits => rsx!("Could not fetch data, out of credits."),
+        },
     };
 
     cx.render(rsx! {

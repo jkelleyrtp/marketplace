@@ -1,42 +1,27 @@
-use crate::helium10::{calculate_review_velocity, ProductListing};
 use crate::state::KeywordEntry;
 use atoms::use_read;
 use dioxus::prelude::*;
 use plotly::{common::Mode, Plot, Scatter};
 use plotly::{common::Title, Layout};
-use std::collections::HashMap;
 
-#[derive(PartialEq, Props)]
-pub struct PlotsProps {
-    entry_id: uuid::Uuid,
+#[derive(Props)]
+pub struct PlotsProps<'a> {
+    entry: &'a KeywordEntry,
 }
 
-pub fn Plots(cx: Context, props: &PlotsProps) -> Element {
-    let keywords = use_read(cx, crate::state::Keywords);
-    let data = keywords.get(&props.entry_id)?;
-
-    let velocities = data
-        .products
-        .iter()
-        .map(|(k, p)| (k, calculate_review_velocity(p)))
-        .collect::<HashMap<_, _>>();
-
-    cx.render(rsx! {
-        div { class: "container flex flex-row md:flex-row py-10 mx-auto"
-            "{props.entry_id}",
-            "{data.keyword}",
-            {ReviewVelocity(cx, &data)}
-            {SalesPlot(cx, &data)}
-        }
-    })
-}
-
-fn ReviewVelocity(cx: Context, entry: &KeywordEntry) -> Element {
-    let prices = entry
+pub fn ReviewVelocity(cx: Context, props: &PlotsProps) -> Element {
+    let prices = props
+        .entry
         .products
         .iter()
         .map(|(_asin, listing)| listing.productData.price)
         .collect::<Vec<_>>();
+
+    // let velocities = data
+    //     .products
+    //     .iter()
+    //     .map(|(k, p)| (k, calculate_review_velocity(p)))
+    //     .collect::<HashMap<_, _>>();
 
     let x = (0..prices.len()).collect::<Vec<_>>();
 
@@ -61,8 +46,9 @@ fn ReviewVelocity(cx: Context, entry: &KeywordEntry) -> Element {
     })
 }
 
-fn SalesPlot(cx: Context, entry: &KeywordEntry) -> Element {
-    let prices = entry
+pub fn SalesPlot(cx: Context, props: &PlotsProps) -> Element {
+    let prices = props
+        .entry
         .products
         .iter()
         .map(|(_asin, listing)| listing.productData.price)

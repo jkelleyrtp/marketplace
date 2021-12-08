@@ -12,6 +12,7 @@ pub mod components {
     pub mod kwordpage;
     pub mod login;
     pub mod navbar;
+    pub mod plots;
     pub mod results;
     pub mod review;
     pub mod search;
@@ -21,6 +22,7 @@ pub mod components {
     pub use kwordpage::*;
     pub use login::*;
     pub use navbar::*;
+    pub use plots::*;
     pub use results::*;
     pub use review::*;
     pub use search::*;
@@ -29,13 +31,7 @@ pub mod db;
 pub mod helium10;
 pub mod icons;
 pub mod logging;
-pub mod plots {
-    pub mod salesscatter;
-}
 pub mod scraper;
-pub mod state {
-    pub mod global;
-    pub use global::*;
-}
+pub mod state;
 
 pub use app::AppRoute;

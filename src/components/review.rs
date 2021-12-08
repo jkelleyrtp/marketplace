@@ -5,12 +5,17 @@ use crate::{
     state::{use_keyword_entry, KeywordEntry},
 };
 use atoms::use_read;
-use dioxus::{core::VElement, prelude::*};
+use dioxus::prelude::*;
 use uuid::Uuid;
 
 pub static Review: Component<()> = |cx, _| {
-    let keywords = use_read(cx, crate::state::Keywords);
-    let rows = keywords.keys().copied().map(|id| rsx!(Row { id: id }));
+    let keywords = use_read(cx, crate::state::KEYWORDS);
+    let rows = keywords.keys().copied().map(|id| {
+        rsx!(Row {
+            key: "{id}"
+            id: id,
+        })
+    });
 
     cx.render(rsx!(
         section { class: "py-8",

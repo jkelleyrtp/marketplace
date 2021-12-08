@@ -1,14 +1,15 @@
 use dioxus::prelude::*;
 
-use crate::{plots::salesscatter::Plots, state::use_current_user};
+use crate::state::use_current_user;
 
 pub static Dashboard: Component<()> = |cx, props| {
-    let name = &use_current_user(cx)?.name;
+    let user = use_current_user(cx).unwrap();
 
     cx.render(rsx!(
         div { class: "py-8 px-6",
             div { class: "container px-4 mx-auto",
-                h2 { class: "text-2xl font-bold", "Welcome, {name} 👋" }
+                h2 { class: "text-2xl font-bold", "Welcome, {user.name} 👋" }
+                p { "Search credits remaining: {user.credits}" }
             }
         }
         QuickActions {}

@@ -13,9 +13,8 @@ const ROUTES: &[AppRoute] = &[
 ];
 
 pub fn NavBar(cx: Context, _props: &()) -> Element {
-    let route = use_read(cx, crate::state::Route);
-    let set_route = use_set(cx, crate::state::Route);
-    let keywords = use_read(cx, crate::state::Keywords);
+    let set_route = use_set(cx, crate::state::ROUTE);
+    let keywords = use_read(cx, crate::state::KEYWORDS);
 
     let primaries = ROUTES.iter().map(|route| {
         let text = match route {

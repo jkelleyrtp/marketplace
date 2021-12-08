@@ -1,11 +1,12 @@
 use std::collections::HashSet;
 
 use crate::{
+    components::plots,
     helium10::{calculate_review_velocity, ProductListing},
-    plots::salesscatter::Plots,
     state::use_keyword_entry,
 };
 
+use atoms::use_read;
 use dioxus::prelude::*;
 use uuid::Uuid;
 
@@ -15,9 +16,17 @@ pub struct ResultsPageProps {
 }
 
 pub fn ResultsPage(cx: &Scope, props: &ResultsPageProps) -> Element {
+    let keywords = use_read(cx, crate::state::KEYWORDS);
+    let data = keywords.get(&props.id)?;
+
     cx.render(rsx! (
         section { class: "text-gray-500 bg-white body-font mx-auto px-12 pt-12"
-            Plots { entry_id: props.id, }
+            div { class: "container flex flex-row md:flex-row py-10 mx-auto"
+                "{props.id}", "{data.keyword}",
+                plots::ReviewVelocity { entry: data }
+                plots::SalesPlot { entry: data }
+            }
+
             ListingTable { id: props.id }
         }
     ))
@@ -82,17 +91,7 @@ struct TableRowProps<'a> {
 }
 
 fn TableRow(cx: Context, props: &TableRowProps) -> Element {
-    let ProductListing {
-        asin,
-        category,
-        marketplace,
-        productData,
-        bsrHistory,
-        requestId,
-        reviewHistory,
-        salesHistory,
-        ..
-    } = props.product;
+    let ProductListing { productData, .. } = props.product;
 
     let len = productData.title.len();
     let trim_len = if len > 100 { 100 } else { len };
