@@ -1,15 +1,16 @@
 //! Show all the products and the appropriate plots
 
-use crate::{icons, state::KeywordEntry};
-use dioxus::{prelude::*, core::VElement};
+use crate::{
+    icons,
+    state::{use_keyword_entry, KeywordEntry},
+};
+use atoms::use_read;
+use dioxus::{core::VElement, prelude::*};
 use uuid::Uuid;
-use crate::state::use_app_state;
 
 pub static Review: Component<()> = |cx, _| {
-    let state = use_app_state(cx)?;
-
-    let state = state.read();
-    let rows = state.keywords.keys().copied().map(|id| rsx!(Row { id: id} ));
+    let keywords = use_read(cx, crate::state::Keywords);
+    let rows = keywords.keys().copied().map(|id| rsx!(Row { id: id }));
 
     cx.render(rsx!(
         section { class: "py-8",
@@ -69,16 +70,15 @@ pub static Review: Component<()> = |cx, _| {
     ))
 };
 
-
 #[derive(Props, PartialEq)]
 struct RowProps {
-    id: Uuid
+    id: Uuid,
 }
 
-fn Row(cx: Context, props: &RowProps ) -> Element {
-    let state = use_app_state(cx)?;
-    let state = state.read();
-    let KeywordEntry { keyword, creator, .. } = state.keywords.get(&props.id)?;
+fn Row(cx: Context, props: &RowProps) -> Element {
+    let KeywordEntry {
+        keyword, creator, ..
+    } = use_keyword_entry(cx, props.id)?;
 
     cx.render(rsx!(
         tr { class: "border-b border-blue-50",
@@ -105,10 +105,9 @@ fn Row(cx: Context, props: &RowProps ) -> Element {
                     a { class: "ml-auto", href: "#", icons::IconTripleDots {} }
                 }
             }
-        }        
+        }
     ))
 }
-
 
 fn see_more(cx: Context) -> Element {
     cx.render(rsx!(
@@ -118,6 +117,6 @@ fn see_more(cx: Context) -> Element {
                 span { class: "mr-1", icons::IconCharts {} }
                 span { "See more Projects" }
             }
-        }        
+        }
     ))
 }

@@ -28,6 +28,7 @@ dependencies = [
  "csv",
  "dioxus",
  "fern",
+ "im-rc",
  "log",
  "plotly",
  "rand 0.8.4",
@@ -1524,6 +1525,7 @@ dependencies = [
  "bitmaps",
  "rand_core 0.5.1",
  "rand_xoshiro",
+ "serde",
  "sized-chunks",
  "typenum",
  "version_check",
@@ -3256,11 +3258,12 @@ checksum = "7cf7d77f457ef8dfa11e4cd5933c5ddb5dc52a94664071951219a97710f0a32b"
 
 [[package]]
 name = "uuid"
-version = "0.8.2"
+version = "1.0.0-alpha.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc5cf98d8186244414c848017f0e2676b3fcb46807f6668a97dfe67359a3c4b7"
+checksum = "bb3ab47baa004111b323696c6eaa2752e7356f7f77cf6b6dc7a2087368ce1ca4"
 dependencies = [
  "getrandom 0.2.3",
+ "rand 0.8.4",
  "serde",
 ]
 

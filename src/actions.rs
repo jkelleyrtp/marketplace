@@ -1,5 +1,5 @@
+use crate::helium10::*;
 use crate::state::KeywordEntry;
-use crate::{helium10::*, state::GlobalModel};
 use reqwest::header::COOKIE;
 use scraper::{Html, Selector};
 use thiserror::Error;

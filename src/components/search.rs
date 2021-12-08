@@ -1,6 +1,9 @@
+use std::collections::HashMap;
+
 use crate::actions::{fetch_asins_from_keyword, fetch_helium_10_from_asins, FetchError};
 use crate::helium10::ProductResponse;
-use crate::state::{use_app_state, GlobalModel, KeywordEntry};
+use crate::state::{use_keyword_entry, KeywordEntry};
+use atoms::use_read;
 use dioxus::prelude::*;
 use uuid::Uuid;
 
@@ -16,7 +19,7 @@ pub fn Search(cx: Context, _props: &()) -> Element {
     let loading_state = use_state(cx, || SearchState::Nothing);
     let keyword = use_state(cx, || "".to_string());
     let current_result_entry = use_state(cx, || None);
-    let app_state = use_app_state(cx)?;
+    let current_user = use_read(cx, crate::state::CurrentUser);
 
     let fetch_task = use_coroutine(cx, move || {
         // The task will persist between renders, so we need to make sure we're
@@ -24,11 +27,8 @@ pub fn Search(cx: Context, _props: &()) -> Element {
         let mut loading_state = loading_state.for_async();
         let mut selected_product = current_result_entry.for_async();
 
-        let creator = app_state.read().current_user.clone();
+        let creator = current_user.clone();
         let keyword = keyword.inner();
-        let app_state = app_state.inner();
-
-        log::info!("starting coroutine");
 
         async move {
             loading_state.set(SearchState::Loading {
@@ -52,7 +52,7 @@ pub fn Search(cx: Context, _props: &()) -> Element {
                         ProductResponse::Success(product) => Some((asin, product)),
                         ProductResponse::Error(_) => None,
                     })
-                    .collect(),
+                    .collect::<HashMap<_, _>>(),
 
                 Err(e) => {
                     loading_state.set(SearchState::Error { msg: e });
@@ -62,14 +62,15 @@ pub fn Search(cx: Context, _props: &()) -> Element {
 
             // Create the new entry and add it to the global state
             let id = Uuid::new_v4();
-            app_state.borrow_mut().write().keywords.insert(
-                id,
-                KeywordEntry {
-                    creator: creator.unwrap(),
-                    keyword,
-                    products,
-                },
-            );
+            todo!();
+            // app_state.borrow_mut().write().keywords.insert(
+            //     id,
+            //     KeywordEntry {
+            //         creator: creator.unwrap(),
+            //         keyword,
+            //         products,
+            //     },
+            // );
 
             // and default the selection
             loading_state.set(SearchState::Loaded);
@@ -96,7 +97,9 @@ pub fn Search(cx: Context, _props: &()) -> Element {
                             table { class: "table-auto w-full",
                                 {table_header(cx)}
                                 tbody {
-                                    {product_rows(cx, current_result_entry, app_state)}
+                                    ProductRows {
+                                        cur_product: current_result_entry
+                                    }
                                 }
                             }
                         }
@@ -116,16 +119,16 @@ pub fn Search(cx: Context, _props: &()) -> Element {
     })
 }
 
-fn product_rows(
-    cx: Context,
-    cur_product: UseState<Option<Uuid>>,
-    state: UseSharedState<GlobalModel>,
-) -> Element {
-    cur_product.and_then(|p| {
-        let state = state.read();
-        let product = state.keywords.get(&p).unwrap();
+#[derive(Props)]
+struct ProductRowsProps<'a> {
+    cur_product: UseState<'a, Option<Uuid>>,
+}
 
-        let products = product.products.values().enumerate().map(|(idx, product)| {
+fn ProductRows(cx: Context, props: &ProductRowsProps) -> Element {
+    let product = use_keyword_entry(cx, *props.cur_product.get().as_ref()?);
+
+    product.and_then(|entry| {
+        let products = entry.products.values().enumerate().map(|(idx, product)| {
             let is_even = if idx % 2 == 0 { "bg-gray-50" } else { "" };
             let asin = &product.asin;
             let Product_Details = "";

@@ -35,7 +35,6 @@ pub mod plots {
 pub mod scraper;
 pub mod state {
     pub mod global;
-    pub mod search;
     pub use global::*;
 }
 

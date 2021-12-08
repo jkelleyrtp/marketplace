@@ -1,11 +1,9 @@
 use dioxus::prelude::*;
 
-use crate::state::use_app_state;
 pub static Login: Component<()> = |cx, props| {
-    let mut state = use_app_state(cx)?;
-
     let mut username = use_state(cx, String::new);
     let mut password = use_state(cx, String::new);
+
     let submit = |_| {
         //
     };

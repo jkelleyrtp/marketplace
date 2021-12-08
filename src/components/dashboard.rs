@@ -1,27 +1,22 @@
 use dioxus::prelude::*;
-use uuid::Uuid;
 
-use crate::{plots::salesscatter::Plots, state::use_app_state};
+use crate::{plots::salesscatter::Plots, state::use_current_user};
 
 pub static Dashboard: Component<()> = |cx, props| {
-    log::debug!("Rendeirng Dashboard {:?}", cx.scope_id());
-
-    let _state = use_app_state(cx)?;
-    let state = _state.read();
-
-    let user_id = state.current_user.as_ref().unwrap();
-    let name = &state.users.get(user_id).unwrap().name;
+    let name = &use_current_user(cx)?.name;
 
     cx.render(rsx!(
         div { class: "py-8 px-6",
-            div { class: "container px-4 mx-auto", h2 { class: "text-2xl font-bold", "Welcome, {name} 👋" } }
+            div { class: "container px-4 mx-auto",
+                h2 { class: "text-2xl font-bold", "Welcome, {name} 👋" }
+            }
         }
         QuickActions {}
         FeaturedSearches {}
     ))
 };
 
-static QuickActions: Component<()> = |cx, props| {
+static QuickActions: Component<()> = |cx, _| {
     cx.render(rsx!(
         section { class: "py-8",
             div { class: "container px-4 mx-auto",
@@ -94,7 +89,7 @@ static QuickActions: Component<()> = |cx, props| {
     ))
 };
 
-static FeaturedSearches: Component<()> = |cx, props| {
+static FeaturedSearches: Component<()> = |cx, _| {
     cx.render(rsx!(
         section { class: "py-8",
             div { class: "container px-4 mx-auto",

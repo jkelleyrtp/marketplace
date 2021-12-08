@@ -1,6 +1,7 @@
 use crate::icons;
-use crate::state::use_app_state;
 use crate::AppRoute;
+use atoms::use_read;
+use atoms::use_set;
 use dioxus::prelude::*;
 
 const ROUTES: &[AppRoute] = &[
@@ -12,10 +13,9 @@ const ROUTES: &[AppRoute] = &[
 ];
 
 pub fn NavBar(cx: Context, _props: &()) -> Element {
-    let state = use_app_state(cx)?;
-
-    let state_read = state.read();
-    let set_route = move |route| state.write().route = route;
+    let route = use_read(cx, crate::state::Route);
+    let set_route = use_set(cx, crate::state::Route);
+    let keywords = use_read(cx, crate::state::Keywords);
 
     let primaries = ROUTES.iter().map(|route| {
         let text = match route {
@@ -39,7 +39,7 @@ pub fn NavBar(cx: Context, _props: &()) -> Element {
         )
     });
 
-    let kwords = state_read.keywords.iter().map(|(k, v)| {
+    let kwords = keywords.iter().map(|(k, v)| {
         rsx!(
             li { key: "{k}"
                 a { class: "flex items-center pl-3 py-3 pr-2 text-gray-50 hover:bg-gray-900 rounded",

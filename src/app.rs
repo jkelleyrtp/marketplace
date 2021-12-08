@@ -1,8 +1,7 @@
 use crate::components;
+use atoms::{use_init_atom_root, use_read};
 use dioxus::prelude::*;
 use uuid::Uuid;
-
-use crate::state::use_provide_app_state;
 
 #[derive(Clone, Debug, PartialEq, Routable)]
 pub enum AppRoute {
@@ -26,11 +25,12 @@ pub enum AppRoute {
 }
 
 pub fn App(cx: Context, _props: &()) -> Element {
-    let st = use_provide_app_state(cx);
+    use_init_atom_root(cx);
+    let route = use_read(cx, crate::state::Route);
 
     cx.render(rsx! {
         div { class: "mx-auto lg:ml-80",
-            {match &st.read().route {
+            {match route {
                 AppRoute::Login => rsx! {
                     components::Login {}
                 },

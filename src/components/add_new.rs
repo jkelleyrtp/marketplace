@@ -11,8 +11,6 @@ use crate::{
 use csv;
 
 pub static AddNew: Component<()> = |cx, props| {
-    log::debug!("Rendeirng AddNew {:?}", cx.scope_id());
-
     let mut state = use_app_state(cx)?;
     let mut name = use_state(cx, String::new);
     let mut contents = use_state(cx, String::new);

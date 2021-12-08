@@ -28,7 +28,7 @@ pub enum ProductResponse {
     Error(serde_json::Value),
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProductListing {
     pub requestId: String,
     pub asin: String,
@@ -40,26 +40,26 @@ pub struct ProductListing {
     pub reviewHistory: HashMap<String, ReviewPoint>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct BsrHistory {
     pub history: Option<HashMap<String, usize>>,
     pub minDate: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct ReviewPoint {
     pub count: f64,
     pub rating: f64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct CategoryData {
     pub id: isize,
     pub name: String,
     pub isCategoryBsr: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct ProductData {
     pub sellerType: isize,
     pub sellersNumber: isize,
@@ -76,7 +76,7 @@ pub struct ProductData {
     pub age: isize,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct SalesHistory {
     pub history: Option<HashMap<String, f64>>,
     pub minDate: Option<String>,
