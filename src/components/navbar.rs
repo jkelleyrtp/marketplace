@@ -4,13 +4,7 @@ use atoms::use_read;
 use atoms::use_set;
 use dioxus::prelude::*;
 
-const ROUTES: &[AppRoute] = &[
-    AppRoute::Home,
-    AppRoute::Search,
-    AppRoute::ImportCsv,
-    AppRoute::Review,
-    AppRoute::Jupyter,
-];
+const ROUTES: &[AppRoute] = &[AppRoute::Home, AppRoute::Review, AppRoute::Analyze];
 
 pub fn NavBar(cx: Context, _props: &()) -> Element {
     let set_route = use_set(cx, crate::state::ROUTE);
@@ -21,8 +15,8 @@ pub fn NavBar(cx: Context, _props: &()) -> Element {
             AppRoute::Home => "Home",
             AppRoute::ImportCsv => "Import CSV",
             AppRoute::Search => "Keyword Search",
-            AppRoute::Review => "Review Products",
-            AppRoute::Jupyter => "Open in Jupyter",
+            AppRoute::Review => "Mange Searches",
+            AppRoute::Analyze => "Open in Jupyter",
             AppRoute::Login => "Login",
             AppRoute::ProductPage { .. } => "Product Page",
             AppRoute::NotFound => "Err 404. Not Found.",
@@ -62,16 +56,13 @@ pub fn NavBar(cx: Context, _props: &()) -> Element {
             div { class: "navbar-backdrop fixed lg:hidden inset-0 bg-gray-800 opacity-10", }
             nav { class: "fixed top-0 left-0 bottom-0 flex flex-col w-3/4 lg:w-80 sm:max-w-xs pt-6 pb-8 bg-gray-800 overflow-y-auto",
                 div { class: "flex w-full items-center px-6 pb-6 mb-6 lg:border-b border-gray-700",
-                    a { class: "text-xl text-white font-semibold", href: "#", }
+                    a { class: "text-xl text-white font-semibold", href: "#", "Marketplace Analyzer"}
                 }
                 div { class: "px-4 pb-6",
                     h3 { class: "mb-2 text-xs uppercase text-gray-500 font-medium", "Main" }
                     ul { class: "mb-8 text-sm font-medium", {primaries} }
                     h3 { class: "mb-2 text-xs uppercase text-gray-500 font-medium", "Searches" }
-                    ul {
-                        class: "text-sm font-medium",
-                        {kwords}
-                    }
+                    ul { class: "text-sm font-medium", {kwords} }
                     div { class: "pt-8",
                         a { class: "flex items-center pl-3 py-3 pr-2 text-gray-50 hover:bg-gray-900 rounded",
                             href: "#",

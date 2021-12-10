@@ -15,8 +15,8 @@ pub enum AppRoute {
     Search,
     #[at("/review")]
     Review,
-    #[at("/jupyter")]
-    Jupyter,
+    #[at("/analyze")]
+    Analyze,
     #[at("/product/{search_id}")]
     ProductPage { search_id: Uuid },
     #[not_found]
@@ -36,7 +36,8 @@ pub fn App(cx: Context, _props: &()) -> Element {
                 },
                 AppRoute::Home => rsx! {
                     components::NavBar {}
-                    components::Dashboard {}
+                    components::Search {}
+                    // components::Dashboard {}
                 },
                 AppRoute::ImportCsv => rsx! {
                     components::NavBar {}
@@ -54,7 +55,7 @@ pub fn App(cx: Context, _props: &()) -> Element {
                     components::NavBar {}
                     components::Review {}
                 ),
-                AppRoute::Jupyter => rsx!(
+                AppRoute::Analyze => rsx!(
                     components::NavBar {}
                     components::Jupyter {}
                 ),
