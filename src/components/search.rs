@@ -1,119 +1,143 @@
-use std::collections::HashMap;
+use crate::actions::{fetch_helium_10_from_asins, FetchError};
+use crate::api::amazon::{fetch_asins_from_keyword, ScrapedAmazonListing};
+use crate::api::helium10::ProductResponse;
+use crate::icons;
+use crate::state::{KeywordEntry, CURRENT_USER, KEYWORDS, SCRAPER_CFG};
 
-use crate::actions::{fetch_asins_from_keyword, fetch_helium_10_from_asins, FetchError};
-use crate::helium10::ProductResponse;
-use crate::state::{use_keyword_entry, KeywordEntry, CURRENT_USER, KEYWORDS};
 use atoms::{use_read, use_set};
 use dioxus::prelude::*;
+use std::collections::HashMap;
 use uuid::Uuid;
 
-#[derive(Debug)]
-pub enum SearchState {
-    Nothing,
-    Loading { msg: Option<String> },
-    Error { msg: FetchError },
-    Loaded,
-}
+const USE_DUMMY_API: bool = true;
 
 pub fn Search(cx: Context, _props: &()) -> Element {
+    // Internal state
     let loading_state = use_state(cx, || SearchState::Nothing);
-    let keyword = use_state(cx, || "".to_string());
-    let current_result_entry = use_state(cx, || None);
+    let keyword_input = use_state(cx, || "".to_string());
+    let amazon_results = use_state(cx, || None);
+    let selected_keyword = use_state(cx, || None);
 
+    // Global state
     let current_user = use_read(cx, CURRENT_USER);
-    let keywords_entries = use_read(cx, KEYWORDS);
+    let helium_data = use_read(cx, KEYWORDS);
     let set_entries = use_set(cx, KEYWORDS);
+    let amazon_cfg = use_read(cx, SCRAPER_CFG).get("amazon_search")?;
 
-    let fetch_task = use_coroutine(cx, move || {
-        // The task will persist between renders, so we need to make sure our values
-        // and handles are used by ref
+    let fetch_amazon_data = use_coroutine(cx, move || {
         let mut loading_state = loading_state.for_async();
-        let mut selected_product = current_result_entry.for_async();
-
-        let creator = current_user.clone();
-        let keyword = keyword.inner();
-        let set_entries = set_entries.clone();
-        let mut new_entries = keywords_entries.clone();
+        let mut amazon_results = amazon_results.for_async();
+        let amazon_cfg = amazon_cfg.to_owned();
+        let keyword = keyword_input.get().to_owned();
 
         async move {
-            loading_state.set(SearchState::Loading {
-                msg: Some("Fetching products from Amazon".to_string()),
-            });
+            loading_state.set(SearchState::fetching_from_amazon());
 
-            // Fetch the data
+            // we don't want to get throttled by amazon when just testing
+            if USE_DUMMY_API {
+                let contents = std::fs::read_to_string("data/scrape.html").unwrap();
+                let results = crate::api::amazon::parse_document(&contents);
+                amazon_results.set(Some(AmazonSearch { keyword, results }));
+                return;
+            }
+
             let client = reqwest::Client::builder().build().unwrap();
+            let results = fetch_asins_from_keyword(&client, &amazon_cfg, true, &keyword)
+                .await
+                .unwrap();
 
-            let new_asins = fetch_asins_from_keyword(&client, &keyword).await.unwrap();
+            amazon_results.set(Some(AmazonSearch { keyword, results }));
+            loading_state.set(SearchState::Nothing);
+        }
+    });
 
-            log::debug!("Fetched asins {:?}", new_asins);
+    let fetch_helium_data = use_coroutine(cx, move || {
+        let mut loading_state = loading_state.for_async();
+        let mut selected_keyword = selected_keyword.for_async();
+        let mut new_entries = helium_data.clone();
+        let cur_results = amazon_results.get_rc().clone();
+        let creator = current_user.clone();
+        let set_entries = set_entries.clone();
+
+        async move {
+            let client = reqwest::Client::builder().build().unwrap();
 
             loading_state.set(SearchState::Loading {
                 msg: Some("Fetching data from Helium 10".to_string()),
             });
 
-            let products = match fetch_helium_10_from_asins(&client, &new_asins).await {
-                Ok(products) => products
-                    .data
-                    .into_iter()
-                    .filter_map(|(asin, product)| match product {
-                        ProductResponse::Success(product) => Some((asin, product)),
-                        ProductResponse::Error(_) => None,
-                    })
-                    .collect::<HashMap<_, _>>(),
+            if let Some(results) = cur_results.as_ref() {
+                let new_asins = results
+                    .results
+                    .iter()
+                    .map(|r| r.asin.clone())
+                    .collect::<Vec<_>>();
 
-                Err(e) => {
-                    loading_state.set(SearchState::Error { msg: e });
-                    return;
-                }
-            };
+                let products = match fetch_helium_10_from_asins(&client, &new_asins).await {
+                    Ok(products) => products
+                        .data
+                        .into_iter()
+                        .filter_map(|(asin, product)| match product {
+                            ProductResponse::Success(product) => Some((asin, product)),
+                            ProductResponse::Error(_) => None,
+                        })
+                        .collect::<HashMap<_, _>>(),
 
-            // Create the new entry and add it to the global state
-            let id = Uuid::new_v4();
-            new_entries.insert(
-                id,
-                KeywordEntry {
-                    creator: creator.unwrap(),
-                    keyword,
-                    products,
-                },
-            );
-            set_entries(new_entries);
+                    Err(e) => {
+                        loading_state.set(SearchState::Error { msg: e });
+                        return;
+                    }
+                };
 
-            // and default the selection
-            loading_state.set(SearchState::Loaded);
-            selected_product.set(Some(id));
+                // Create the new entry and add it to the global state
+                let id = Uuid::new_v4();
+                new_entries.insert(
+                    id,
+                    KeywordEntry {
+                        creator: creator.unwrap(),
+                        keyword: results.keyword.clone(),
+                        products,
+                    },
+                );
+                set_entries(new_entries);
+
+                // and default the selection
+                loading_state.set(SearchState::Loaded);
+                selected_keyword.set(Some(id));
+            }
         }
     });
-
-    let loading_msg = match loading_state.get() {
-        SearchState::Nothing => rsx!(""),
-        SearchState::Loading { msg } => rsx!({ [format_args!("Loading... {:?}", msg)] }),
-        SearchState::Loaded => rsx!("Loaded!"),
-        SearchState::Error { msg } => match msg {
-            FetchError::Reqwest(err) => todo!(),
-            FetchError::FailedToParse(err) => todo!(),
-            FetchError::OutOfCredits => rsx!("Could not fetch data, out of credits."),
-        },
-    };
 
     cx.render(rsx! {
         section { class: "text-gray-600 body-font relative",
             div { class: "container px-5 py-24 mx-auto",
                 div { class: "flex flex-col text-center w-full mb-12",
-                    h1 { class: "sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900", "Search Amazon for Keywords" }
-                    p { class: "lg:w-2/3 mx-auto leading-relaxed text-base", "Add your keywords here to search for amazon data" }
+                    h1 { class: "mb-2 text-5xl font-bold font-heading", "Search Amazon for Keywords" },
+                    p { class: "lg:w-2/3 mx-auto leading-relaxed text-base", "Add your keywords here to scrape the amazon search page." }
                 }
-                div { class: "lg:w-1/2 md:w-2/3 mx-auto",
-                    div { class: "flex flex-wrap -m-2",
-                        SearchBox { keyword: keyword }
-                        ProductTable { cur_product: current_result_entry }
-                        {loading_msg}
+                div { class: "w-1/3 mx-auto ", SearchBox { keyword: keyword_input } }
+                div { class: "w-2/3 mx-auto "
+                    div { class: "flex flex-col w-full p-2",
                         div { class: "p-2 w-full",
                             button { class: "flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg",
-                                "Download Helium10 Data"
-                                onclick: move |_| fetch_task.start(),
+                                "Search Amazon"
+                                onclick: move |_| fetch_amazon_data.start(),
                             }
                         }
+                        div { class: "p-2 w-full",
+                            button {
+                                class: format_args!("flex mx-auto text-white border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg {}", if amazon_results.is_some() { "bg-indigo-500" } else { "bg-gray-500" }),
+                                "Download Helium10"
+                                onclick: move |_| fetch_helium_data.start(),
+                            }
+                        }
+                    }
+                    LoadingBanner { loading_state: loading_state }
+                }
+
+                div { class: "lg:w-2/3 md:w-2/3 mx-auto",
+                    div { class: "flex flex-wrap -m-2",
+                        ProductTable { amazon_results: amazon_results }
                     }
                 }
             }
@@ -123,26 +147,49 @@ pub fn Search(cx: Context, _props: &()) -> Element {
 
 #[derive(Props)]
 struct ProductTableProps<'a> {
-    cur_product: UseState<'a, Option<Uuid>>,
+    amazon_results: UseState<'a, Option<AmazonSearch>>,
 }
 
 fn ProductTable(cx: Context, props: &ProductTableProps) -> Element {
-    let product = use_keyword_entry(cx, *props.cur_product.get().as_ref()?);
+    if props.amazon_results.get().is_none() {
+        return rsx!(cx, div {});
+    }
 
-    let rows = product.and_then(|entry| {
-        let products = entry.products.values().enumerate().map(|(idx, product)| {
+    let rows = props.amazon_results.get().as_ref().and_then(|search| {
+        let products = search.results.iter().enumerate().map(|(idx, list)| {
+            let ScrapedAmazonListing {
+                name,
+                asin,
+                price,
+                rating,
+                num_reviews,
+                img_url,
+                ..
+            } = list;
+
             let is_even = if idx % 2 == 0 { "bg-gray-50" } else { "" };
-            let asin = &product.asin;
-            let Product_Details = "";
+
             rsx!(
                 tr { class: "text-xs {is_even}", key: "{asin}"
-                    td { class: "py-5 px-6 font-medium", "{asin}" }
-                    td { class: "font-medium", "{Product_Details}" }
-                    td { class: "font-medium", "name@shuffle.dev" }
-                    td { class: "font-medium", "Monthly" }
+                    td { class: "py-5 px-6 font-medium",
+                        a { "{name}", href: "https://www.amazon.com/dp/{asin}" }
+                    }
+                    td { class: "font-medium", "{rating}" }
+                    td { class: "font-medium", "${price}" }
+                    td { class: "font-medium", "{num_reviews}" }
                     td {
-                        span { class: "inline-block py-1 px-2 text-white bg-green-500 rounded-full",
-                            "Completed"
+                        class: "flex flex-row"
+                        img {
+                            class: "h-12 rounded-full",
+                            src: "{img_url}",
+                        }
+                        img {
+                            class: "h-12 rounded-full",
+                            src: "{img_url}",
+                        }
+                        img {
+                            class: "h-12 rounded-full",
+                            src: "{img_url}",
                         }
                     }
                 }
@@ -157,10 +204,10 @@ fn ProductTable(cx: Context, props: &ProductTableProps) -> Element {
             table { class: "table-auto w-full",
                 thead {
                     tr { class: "text-xs text-gray-500 text-left",
-                        th { class: "pb-3 font-medium", "Transaction ID" }
-                        th { class: "pb-3 font-medium", "Date" }
-                        th { class: "pb-3 font-medium", "E-mail" }
-                        th { class: "pb-3 font-medium", "Subscription" }
+                        th { class: "pb-3 font-medium", "Product" }
+                        th { class: "pb-3 font-medium", "Rating" }
+                        th { class: "pb-3 font-medium", "Price" }
+                        th { class: "pb-3 font-medium", "Num Reviews" }
                         th { class: "pb-3 font-medium", "Status" }
                     }
                 }
@@ -173,12 +220,49 @@ fn ProductTable(cx: Context, props: &ProductTableProps) -> Element {
 }
 
 #[derive(Props)]
+struct LoadingBannerProps<'a> {
+    loading_state: UseState<'a, SearchState>,
+}
+
+fn LoadingBanner(cx: Context, props: &LoadingBannerProps) -> Element {
+    let text = match props.loading_state.get() {
+        SearchState::Nothing => return cx.render(rsx!(div {})),
+        SearchState::Loading { msg } => match msg {
+            Some(msg) => rsx!({ [format_args!("Loading... {}", msg)] }),
+            None => rsx!("Loading..."),
+        },
+        SearchState::Loaded => rsx!("Loaded!"),
+        SearchState::Error { msg } => match msg {
+            FetchError::Reqwest(err) => {
+                rsx!({ [format_args!("Connecting to server failed. {:}", err)] })
+            }
+            FetchError::FailedToParse(err) => {
+                rsx!({ [format_args!("Failed to parse response from API. {:}", err)] })
+            }
+            FetchError::OutOfCredits => rsx!("Could not fetch data, out of credits."),
+        },
+    };
+
+    cx.render(rsx!(
+        div { class: "py-8 px-6",
+            div { class: "p-6 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg",
+                div { class: "flex items-center",
+                    span { class: "inline-block mr-2", icons::Alert {} }
+                    h3 { class: "text-indigo-800 font-medium", {text} }
+                    button { class: "ml-auto", icons::Close {} }
+                }
+            }
+        }
+    ))
+}
+
+#[derive(Props)]
 struct SearchBoxProps<'a> {
     keyword: UseState<'a, String>,
 }
 fn SearchBox(cx: Context, props: &SearchBoxProps) -> Element {
     cx.render(rsx!(
-        div { class: "p-2 w-1/2", 
+        div { class: "p-2 mx-auto",
             div { class: "relative",
                 label { class: "leading-7 text-sm text-gray-600",
                     r#for: "name",
@@ -193,4 +277,24 @@ fn SearchBox(cx: Context, props: &SearchBoxProps) -> Element {
             }
         }
     ))
+}
+
+#[derive(Debug)]
+pub enum SearchState {
+    Nothing,
+    Loading { msg: Option<String> },
+    Error { msg: FetchError },
+    Loaded,
+}
+impl SearchState {
+    fn fetching_from_amazon() -> Self {
+        SearchState::Loading {
+            msg: Some("Fetching products from Amazon".to_string()),
+        }
+    }
+}
+
+struct AmazonSearch {
+    keyword: String,
+    results: Vec<ScrapedAmazonListing>,
 }

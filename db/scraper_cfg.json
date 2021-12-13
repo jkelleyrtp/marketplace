@@ -1,0 +1,28 @@
+{
+    "amazon_search": {
+        "headers": {
+            "dnt": "1",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "referer": "https://www.amazon.com",
+            "authority": "www.amazon.com",
+            "pragma": "no-cache",
+            "cache-control": "no-cache",
+            "upgrade-insecure-requests": "1",
+            "sec-fetch-site": "none",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-dest": "document",
+            "accept-language": "en-GB,en-US;q=0.9,en;q=0.8"
+        },
+        "cookie_domain": "https://www.amazon.com",
+        "cookies": [
+            "csm-hit=tb:s-3CY0B7P4R0SMT2058YTE|1639105423279&t:1639105423279&adb:adblk_no",
+            "i18n-prefs=USD",
+            "session-id=132-2091931-4217730",
+            "session-id-time=2082787201l",
+            "session-token=IPO+6Zh1p7hjNVG9TtGc/PKYDftpjUDg5YisKceRSQPyvmEr80T1w1Al7YpyqAFkbIjkbnNRSw+ceRQQOrOK3BJRx47/Kh4xfpbVvO7K0iDVCIETYmjdgX307h8xwpUVLOff78UghsN6n1916WmmjY33C+kMpUCS3+oAkW7jT0eQb2pVfXmSXXISGNgdt71g",
+            "skin=noskin",
+            "ubid-main=134-6526928-0717007"
+        ]
+    }
+}

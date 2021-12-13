@@ -4,10 +4,8 @@ pub mod actions;
 pub mod app;
 pub mod hooks;
 pub mod components {
-    // pub mod add_new;
-    // pub use add_new::*;
-
     pub mod dashboard;
+    pub mod greeting;
     pub mod jupyter;
     pub mod kwordpage;
     pub mod login;
@@ -18,6 +16,7 @@ pub mod components {
     pub mod search;
 
     pub use dashboard::*;
+    pub use greeting::*;
     pub use jupyter::*;
     pub use kwordpage::*;
     pub use login::*;
@@ -27,8 +26,11 @@ pub mod components {
     pub use review::*;
     pub use search::*;
 }
-pub mod db;
-pub mod helium10;
+pub mod api {
+    pub mod amazon;
+    pub mod cfg;
+    pub mod helium10;
+}
 pub mod icons;
 pub mod logging;
 pub mod scraper;

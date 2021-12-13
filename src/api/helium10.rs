@@ -1,3 +1,11 @@
+//! Code relevant to the Helium 10 API.
+//!
+//! The data for the API is obtained through the unofficial API (ie the one your
+//! browser hits when you use X-Ray).
+//!
+//! Note: this API is not quite robust and might fail parsing.
+
+use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -89,6 +97,60 @@ pub struct SalesHistory {
     pub last90DaysPriceTrend: isize,
 }
 
+// "Product Details","ASIN","Brand","Price","Sales","Revenue","BSR","FBA Fees","Active Sellers #","Ratings","Review Count","Images","Review velocity","Buy Box","Category","Size Tier","Delivery","Dimensions","Weight","Creation Date"
+
+#[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
+pub struct ProductAnalysis {
+    pub sales: isize,
+    pub revenue: f64,
+    pub review_velocity: f64,
+    // pub delivery: String,
+    pub creation_date: String,
+    pub rating: f64,
+    pub num_reviews: f64,
+    // pub asin: String,
+    // pub brand: String,
+    // pub price: f64,
+    // pub bsr: isize,
+    // pub fba_fees: isize,
+    // pub sellers_number: isize,
+    // pub ratings: f64,
+    // pub review_count: isize,
+    // pub images: isize,
+    // pub buy_box: bool,
+    // pub category: String,
+    // pub size_tier: isize,
+    // pub dimensions: serde_json::Value,
+    // pub weight: f64,
+}
+impl ProductAnalysis {
+    pub fn new(product: &ProductListing) -> Self {
+        let sales = product.salesHistory.last30DaysSales;
+
+        let revenue = sales as f64 * product.productData.price;
+        let review_velocity = calculate_review_velocity(product);
+
+        let p = product.reviewHistory.values().last().unwrap();
+
+        // Create a NaiveDateTime from the timestamp
+        let naive = NaiveDateTime::from_timestamp(product.productData.age as i64, 0);
+
+        let datetime: DateTime<Utc> = DateTime::from_utc(naive, Utc);
+
+        // Format the datetime how you want
+        let newdate = datetime.format("%Y-%m-%d");
+
+        Self {
+            sales,
+            revenue,
+            review_velocity,
+            creation_date: format!("{}", newdate),
+            rating: p.rating,
+            num_reviews: p.count,
+        }
+    }
+}
+
 pub fn calculate_review_velocity(data: &ProductListing) -> f64 {
     let mut sum = 0.0;
     for (_, point) in &data.reviewHistory {
@@ -99,14 +161,14 @@ pub fn calculate_review_velocity(data: &ProductListing) -> f64 {
 
 #[test]
 fn parse_invocation() {
-    let contents = include_str!("../responses/invocation.json");
+    let contents = include_str!("../../responses/invocation.json");
     let g = serde_json::from_str::<InvocationResponse>(contents).unwrap();
     dbg!(g);
 }
 
 #[test]
 fn parse_product() {
-    let contents = include_str!("../responses/product.json");
+    let contents = include_str!("../../responses/product.json");
     let g = serde_json::from_str::<ProductListResponse>(contents).unwrap();
     dbg!(g);
 }

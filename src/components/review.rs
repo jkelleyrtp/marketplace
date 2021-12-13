@@ -1,79 +1,55 @@
 //! Show all the products and the appropriate plots
 
-use crate::{
-    icons,
-    state::{use_keyword_entry, KeywordEntry},
-};
+use crate::{icons, state};
 use atoms::use_read;
 use dioxus::prelude::*;
 use uuid::Uuid;
 
 pub static Review: Component<()> = |cx, _| {
-    let keywords = use_read(cx, crate::state::KEYWORDS);
-    let rows = keywords.keys().copied().map(|id| {
-        rsx!(Row {
-            key: "{id}"
-            id: id,
-        })
-    });
-
     cx.render(rsx!(
         section { class: "py-8",
             div { class: "container px-4 mx-auto",
                 div { class: "pt-4 bg-white shadow rounded",
-                    div { class: "px-6 border-b border-blue-50",
-                        div { class: "flex flex-wrap items-center mb-4",
-                            div {
-                                h3 { class: "text-xl font-bold", "Project Progress Data" }
-                                p { class: "text-sm text-gray-500 font-medium", "List of recent contracts and freelancers" }
-                            }
-                            a { class: "ml-auto flex items-center py-2 px-3 text-xs text-white bg-indigo-500 hover:bg-indigo-600 rounded",
-                                href: "#",
-                                icons::IconUpload {}
-                                span { "Report" }
-                            }
-                        }
-                        div {
-                            a { class: "inline-block px-4 pb-2 text-sm font-medium text-indigo-500 border-b-2 border-indigo-500",
-                                href: "#",
-                                "Progress"
-                            }
-                            a { class: "inline-block px-4 pb-2 text-sm font-medium text-gray-300 border-b-2 border-transparent hover:border-gray-300",
-                                href: "#",
-                                "Completed"
-                            }
-                            a { class: "inline-block px-4 pb-2 text-sm font-medium text-gray-300 border-b-2 border-transparent hover:border-gray-300",
-                                href: "#",
-                                "Invoices"
-                            }
-                        }
-                    }
-                    div {
-                        table { class: "table-auto w-full",
-                            thead { class: "bg-gray-50",
-                                tr { class: "text-xs text-gray-500 text-left",
-                                    th { class: "flex items-center pl-6 py-4 font-medium",
-                                        input { class: "mr-3",
-                                            id: "",
-                                            r#type: "checkbox",
-                                            name: "",
-                                        }
-                                        span { "Information" }
-                                    }
-                                    th { class: "py-4 font-medium", "Project Name" }
-                                    th { class: "py-4 font-medium", "Progress" }
-                                }
-                            }
-                            tbody {
-                                {rows}
-                            }
-                        }
-                    }
+                    ManageKeywords {}
+                    ReviewTable { }
                 }
             }
         }
     ))
 };
+
+fn ReviewTable(cx: Context, _: &()) -> Element {
+    let keywords = use_read(cx, state::KEYWORDS);
+
+    let rows = keywords.keys().copied().map(|id| {
+        rsx!(Row {
+            key: "{id}",
+            id: id,
+        })
+    });
+
+    cx.render(rsx!(
+        table { class: "table-auto w-full",
+            thead { class: "bg-gray-50",
+                tr { class: "text-xs text-gray-500 text-left",
+                    th { class: "flex items-center pl-6 py-4 font-medium",
+                        input { class: "mr-3",
+                            id: "",
+                            r#type: "checkbox",
+                            name: "",
+                        }
+                        span { "Information" }
+                    }
+                    th { class: "py-4 font-medium", "Project Name" }
+                    th { class: "py-4 font-medium", "Progress" }
+                }
+            }
+            tbody {
+                {rows}
+            }
+        }
+    ))
+}
 
 #[derive(Props, PartialEq)]
 struct RowProps {
@@ -81,16 +57,21 @@ struct RowProps {
 }
 
 fn Row(cx: Context, props: &RowProps) -> Element {
-    let KeywordEntry {
-        keyword, creator, ..
-    } = use_keyword_entry(cx, props.id)?;
+    let state::KeywordEntry {
+        keyword,
+        creator,
+        products,
+        ..
+    } = state::use_keyword_entry(cx, props.id)?;
+
+    let img_url = &products.values().next().unwrap().productData.imageUrl;
 
     cx.render(rsx!(
         tr { class: "border-b border-blue-50",
             td { class: "flex items-center py-4 px-6 font-medium",
                 input { class: "mr-3", id: "", name: "", r#type: "checkbox", }
                 div { class: "flex px-4 py-3",
-                    img { class: "w-8 h-8 mr-4 object-cover rounded-md", alt: "", src: "https://images.unsplash.com/photo-1559893088-c0787ebfc084?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;ixlib=rb-1.2.1&amp;auto=format&amp;fit=crop&amp;w=1050&amp;q=80", }
+                    img { class: "w-8 h-8 mr-4 object-cover rounded-md", alt: "", src: "{img_url}", }
                     div {
                         p { class: "text-sm font-medium", "{keyword}" }
                         p { class: "text-xs text-gray-500", "{creator}" }
@@ -108,6 +89,38 @@ fn Row(cx: Context, props: &RowProps) -> Element {
                         div { class: "absolute top-0 left-0 h-full w-2/6 bg-indigo-500 rounded-full", }
                     }
                     a { class: "ml-auto", href: "#", icons::IconTripleDots {} }
+                }
+            }
+        }
+    ))
+}
+
+fn ManageKeywords(cx: Context, _: &()) -> Element {
+    cx.render(rsx!(
+        div { class: "px-6 border-b border-blue-50",
+            div { class: "flex flex-wrap items-center mb-4",
+                div {
+                    h3 { class: "text-xl font-bold", "Project Progress Data" }
+                    p { class: "text-sm text-gray-500 font-medium", "List of recent contracts and freelancers" }
+                }
+                a { class: "ml-auto flex items-center py-2 px-3 text-xs text-white bg-indigo-500 hover:bg-indigo-600 rounded",
+                    href: "#",
+                    icons::IconUpload {}
+                    span { "Report" }
+                }
+            }
+            div {
+                a { class: "inline-block px-4 pb-2 text-sm font-medium text-indigo-500 border-b-2 border-indigo-500",
+                    href: "#",
+                    "Progress"
+                }
+                a { class: "inline-block px-4 pb-2 text-sm font-medium text-gray-300 border-b-2 border-transparent hover:border-gray-300",
+                    href: "#",
+                    "Completed"
+                }
+                a { class: "inline-block px-4 pb-2 text-sm font-medium text-gray-300 border-b-2 border-transparent hover:border-gray-300",
+                    href: "#",
+                    "Invoices"
                 }
             }
         }

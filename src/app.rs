@@ -35,32 +35,40 @@ pub fn App(cx: Context, _props: &()) -> Element {
                     components::Login {}
                 },
                 AppRoute::Home => rsx! {
-                    components::NavBar {}
-                    components::Search {}
-                    // components::Dashboard {}
+                    components::VerticalNav {}
+                    components::TopNav {}
+                    components::Greeting {}
+                    components::Dashboard {}
+                    // components::Review {}
                 },
                 AppRoute::ImportCsv => rsx! {
-                    components::NavBar {}
+                    components::VerticalNav {}
+                    components::TopNav {}
                     "currently cannot import csv"
                 },
                 AppRoute::Search => rsx! {
-                    components::NavBar {}
+                    components::VerticalNav {}
+                    components::TopNav {}
                     components::Search {}
                 },
                 AppRoute::ProductPage { search_id } => rsx!(
-                    components::NavBar {}
+                    components::VerticalNav {}
+                    components::TopNav {}
                     components::ResultsPage { id: *search_id }
                 ),
                 AppRoute::Review => rsx!(
-                    components::NavBar {}
+                    components::VerticalNav {}
+                    components::TopNav {}
                     components::Review {}
                 ),
                 AppRoute::Analyze => rsx!(
-                    components::NavBar {}
+                    components::VerticalNav {}
+                    components::TopNav {}
                     components::Jupyter {}
                 ),
                 AppRoute::NotFound => rsx!(
-                    components::NavBar {}
+                    components::VerticalNav {}
+                    components::TopNav {}
                     "not found :("
                 ),
             }}

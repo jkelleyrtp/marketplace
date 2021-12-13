@@ -1,4 +1,10 @@
-use crate::{helium10::ProductListing, AppRoute};
+use crate::{
+    api::{
+        cfg::{ScraperCfg, ScraperCfgFile},
+        helium10::{ProductAnalysis, ProductListing},
+    },
+    AppRoute,
+};
 use atoms::prelude::*;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -20,10 +26,31 @@ pub static KEYWORDS: AtomFamily<Uuid, KeywordEntry> = |_| {
     serde_json::from_str(&kwf).unwrap()
 };
 
+pub static PRODUCT_ANALYSIS: AtomFamily<String, ProductAnalysis> = |_| {
+    let kwf = std::fs::read_to_string("db/keywords.json").expect("couldn't find launch db");
+    let keywords: HashMap<Uuid, KeywordEntry> = serde_json::from_str(&kwf).unwrap();
+
+    let mut analysis = im_rc::HashMap::new();
+    for (id, entry) in keywords {
+        for (asin, product) in entry.products {
+            let analsysis = ProductAnalysis::new(&product);
+            analysis.insert(asin, analsysis);
+        }
+    }
+    analysis
+};
+
+pub static SCRAPER_CFG: AtomFamily<String, ScraperCfg> = |_| {
+    let cfg_file =
+        std::fs::read_to_string("db/scraper_cfg.json").expect("couldn't find scraper cfg");
+    serde_json::from_str(&cfg_file).unwrap()
+};
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct User {
     pub id: Uuid,
-    pub name: String,
+    pub full_name: String,
+    pub short_name: String,
     pub email: String,
     pub password: String,
     pub credits: usize,

@@ -1,6 +1,5 @@
-use crate::helium10::*;
+use crate::api::helium10::*;
 use reqwest::header::COOKIE;
-use scraper::{Html, Selector};
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -13,49 +12,6 @@ pub enum FetchError {
 
     #[error("No credits left")]
     OutOfCredits,
-}
-
-/// Scrape the amazon search page to find all the asins related to a search term
-pub async fn fetch_asins_from_keyword(
-    client: &reqwest::Client,
-    kwords: &str,
-) -> Result<Vec<String>, FetchError> {
-    let term = kwords.replace(" ", "+");
-
-    let accounts_res = client
-            .get(format!("https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={}", term))
-            .header("authority", "www.amazon.com")
-            .header("pragma", "no-cache")
-            .header("cache-control", "no-cache")
-            .header("dnt", "1")
-            .header("upgrade-insecure-requests", "1")
-            .header("user-agent", "Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36")
-            .header("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-            .header("sec-fetch-site", "none")
-            .header("sec-fetch-mode", "navigate")
-            .header("sec-fetch-dest", "document")
-            .header("accept-language", "en-GB,en-US;q=0.9,en;q=0.8")
-            .send()
-            .await?
-            .text()
-            .await?;
-
-    let parsed_html = Html::parse_document(&accounts_res);
-    let selector = Selector::parse("div[data-asin]").unwrap();
-
-    let asins = parsed_html
-        .select(&selector)
-        .filter_map(|element| {
-            let asin = element.value().attr("data-asin").unwrap().to_string();
-            if asin.is_empty() {
-                None
-            } else {
-                Some(asin)
-            }
-        })
-        .collect::<Vec<_>>();
-
-    Ok(asins)
 }
 
 /// Take a list of asins and fetch the product details for each
