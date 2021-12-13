@@ -26,16 +26,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'single'",
+            "name": "Debug example 'single'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=single",
+                    "--example=single",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "single",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -44,17 +44,17 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'single'",
+            "name": "Debug unit tests in example 'single'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=single",
+                    "--example=single",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "single",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -63,16 +63,127 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'parse_scraper'",
+            "name": "Debug example 'fetch_amazon'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=parse_scraper",
+                    "--example=fetch_amazon",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "fetch_amazon",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example 'fetch_amazon'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=fetch_amazon",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "fetch_amazon",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example 'add_to_db'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=add_to_db",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "add_to_db",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example 'add_to_db'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=add_to_db",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "add_to_db",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example 'read_response'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=read_response",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "read_response",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example 'read_response'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=read_response",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "read_response",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example 'parse_scraper'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=parse_scraper",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "parse_scraper",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -81,17 +192,17 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'parse_scraper'",
+            "name": "Debug unit tests in example 'parse_scraper'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=parse_scraper",
+                    "--example=parse_scraper",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "parse_scraper",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -100,16 +211,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'server'",
+            "name": "Debug example 'server'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=server",
+                    "--example=server",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "server",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -118,17 +229,17 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'server'",
+            "name": "Debug unit tests in example 'server'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=server",
+                    "--example=server",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "server",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -137,16 +248,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'serde_asins'",
+            "name": "Debug example 'serde_asins'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=serde_asins",
+                    "--example=serde_asins",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "serde_asins",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -155,17 +266,17 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'serde_asins'",
+            "name": "Debug unit tests in example 'serde_asins'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=serde_asins",
+                    "--example=serde_asins",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "serde_asins",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -174,16 +285,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'desktop'",
+            "name": "Debug example 'desktop'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=desktop",
+                    "--example=desktop",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "desktop",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -192,17 +303,17 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'desktop'",
+            "name": "Debug unit tests in example 'desktop'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=desktop",
+                    "--example=desktop",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "desktop",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -211,16 +322,53 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'har'",
+            "name": "Debug example 'webdriver'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=har",
+                    "--example=webdriver",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "webdriver",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example 'webdriver'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=webdriver",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "webdriver",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example 'har'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=har",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "har",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -229,17 +377,17 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'har'",
+            "name": "Debug unit tests in example 'har'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=har",
+                    "--example=har",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "har",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -248,16 +396,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'scrape'",
+            "name": "Debug example 'scrape'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=scrape",
+                    "--example=scrape",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "scrape",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -266,17 +414,17 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'scrape'",
+            "name": "Debug unit tests in example 'scrape'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=scrape",
+                    "--example=scrape",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "scrape",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -285,16 +433,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'scrape_and_save'",
+            "name": "Debug example 'scrape_and_save'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=scrape_and_save",
+                    "--example=scrape_and_save",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "scrape_and_save",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -303,17 +451,17 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'scrape_and_save'",
+            "name": "Debug unit tests in example 'scrape_and_save'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=scrape_and_save",
+                    "--example=scrape_and_save",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "scrape_and_save",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -322,16 +470,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'add_from_csv'",
+            "name": "Debug example 'parse_single'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=add_from_csv",
+                    "--example=parse_single",
                     "--package=amazon_isr"
                 ],
                 "filter": {
-                    "name": "add_from_csv",
-                    "kind": "bin"
+                    "name": "parse_single",
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -340,17 +488,35 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'add_from_csv'",
+            "name": "Debug unit tests in example 'parse_single'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=add_from_csv",
+                    "--example=parse_single",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "parse_single",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example 'add_from_csv'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=add_from_csv",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "add_from_csv",
-                    "kind": "bin"
+                    "kind": "example"
                 }
             },
             "args": [],
@@ -359,35 +525,54 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'app_plots'",
-            "cargo": {
-                "args": [
-                    "build",
-                    "--bin=app_plots",
-                    "--package=amazon_isr"
-                ],
-                "filter": {
-                    "name": "app_plots",
-                    "kind": "bin"
-                }
-            },
-            "args": [],
-            "cwd": "${workspaceFolder}"
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug unit tests in executable 'app_plots'",
+            "name": "Debug unit tests in example 'add_from_csv'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=app_plots",
+                    "--example=add_from_csv",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "add_from_csv",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example 'app_plots'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=app_plots",
                     "--package=amazon_isr"
                 ],
                 "filter": {
                     "name": "app_plots",
-                    "kind": "bin"
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example 'app_plots'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=app_plots",
+                    "--package=amazon_isr"
+                ],
+                "filter": {
+                    "name": "app_plots",
+                    "kind": "example"
                 }
             },
             "args": [],
