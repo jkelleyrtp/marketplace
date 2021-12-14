@@ -11,20 +11,20 @@ use uuid::Uuid;
 
 const USE_DUMMY_API: bool = true;
 
-pub fn Search(cx: Context, _props: &()) -> Element {
+pub fn Search(cx: Scope<()>) -> Element {
     // Internal state
-    let loading_state = use_state(cx, || SearchState::Nothing);
-    let keyword_input = use_state(cx, || "".to_string());
-    let amazon_results = use_state(cx, || None);
-    let selected_keyword = use_state(cx, || None);
+    let loading_state = use_state(&cx, || SearchState::Nothing);
+    let keyword_input = use_state(&cx, || "".to_string());
+    let amazon_results = use_state(&cx, || None);
+    let selected_keyword = use_state(&cx, || None);
 
     // Global state
-    let current_user = use_read(cx, CURRENT_USER);
-    let helium_data = use_read(cx, KEYWORDS);
-    let set_entries = use_set(cx, KEYWORDS);
-    let amazon_cfg = use_read(cx, SCRAPER_CFG).get("amazon_search")?;
+    let current_user = use_read(&cx, CURRENT_USER);
+    let helium_data = use_read(&cx, KEYWORDS);
+    let set_entries = use_set(&cx, KEYWORDS);
+    let amazon_cfg = use_read(&cx, SCRAPER_CFG).get("amazon_search")?;
 
-    let fetch_amazon_data = use_coroutine(cx, move || {
+    let fetch_amazon_data = use_coroutine(&cx, move || {
         let mut loading_state = loading_state.for_async();
         let mut amazon_results = amazon_results.for_async();
         let amazon_cfg = amazon_cfg.to_owned();
@@ -51,7 +51,7 @@ pub fn Search(cx: Context, _props: &()) -> Element {
         }
     });
 
-    let fetch_helium_data = use_coroutine(cx, move || {
+    let fetch_helium_data = use_coroutine(&cx, move || {
         let mut loading_state = loading_state.for_async();
         let mut selected_keyword = selected_keyword.for_async();
         let mut new_entries = helium_data.clone();
@@ -150,12 +150,12 @@ struct ProductTableProps<'a> {
     amazon_results: UseState<'a, Option<AmazonSearch>>,
 }
 
-fn ProductTable(cx: Context, props: &ProductTableProps) -> Element {
-    if props.amazon_results.get().is_none() {
+fn ProductTable<'a>(cx: Scope<'a, ProductTableProps<'a>>) -> Element {
+    if cx.props.amazon_results.get().is_none() {
         return rsx!(cx, div {});
     }
 
-    let rows = props.amazon_results.get().as_ref().and_then(|search| {
+    let rows = cx.props.amazon_results.get().as_ref().and_then(|search| {
         let products = search.results.iter().enumerate().map(|(idx, list)| {
             let ScrapedAmazonListing {
                 name,
@@ -224,8 +224,8 @@ struct LoadingBannerProps<'a> {
     loading_state: UseState<'a, SearchState>,
 }
 
-fn LoadingBanner(cx: Context, props: &LoadingBannerProps) -> Element {
-    let text = match props.loading_state.get() {
+fn LoadingBanner<'a>(cx: Scope<'a, LoadingBannerProps<'a>>) -> Element {
+    let text = match cx.props.loading_state.get() {
         SearchState::Nothing => return cx.render(rsx!(div {})),
         SearchState::Loading { msg } => match msg {
             Some(msg) => rsx!({ [format_args!("Loading... {}", msg)] }),
@@ -260,7 +260,7 @@ fn LoadingBanner(cx: Context, props: &LoadingBannerProps) -> Element {
 struct SearchBoxProps<'a> {
     keyword: UseState<'a, String>,
 }
-fn SearchBox(cx: Context, props: &SearchBoxProps) -> Element {
+fn SearchBox<'a>(cx: Scope<'a, SearchBoxProps<'a>>) -> Element {
     cx.render(rsx!(
         div { class: "p-2 mx-auto",
             div { class: "relative",
@@ -272,7 +272,7 @@ fn SearchBox(cx: Context, props: &SearchBoxProps) -> Element {
                     id: "name",
                     r#type: "text",
                     name: "name",
-                    oninput: move |e| props.keyword.set(e.value.clone()),
+                    oninput: move |e| cx.props.keyword.set(e.value.clone()),
                 }
             }
         }

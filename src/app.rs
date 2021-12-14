@@ -24,9 +24,9 @@ pub enum AppRoute {
     NotFound,
 }
 
-pub fn App(cx: Context, _props: &()) -> Element {
-    use_init_atom_root(cx);
-    let route = use_read(cx, crate::state::ROUTE);
+pub fn App(cx: Scope<()>) -> Element {
+    use_init_atom_root(&cx);
+    let route = use_read(&cx, crate::state::ROUTE);
 
     cx.render(rsx! {
         div { class: "mx-auto lg:ml-80",

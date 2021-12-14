@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-pub static Settings: Component<()> = |cx, _| {
+pub static Settings: Component<()> = |cx| {
     cx.render(rsx!(
         svg { class: "text-gray-600 w-5 h-5",
             xmlns: "http://www.w3.org/2000/svg",
@@ -14,7 +14,7 @@ pub static Settings: Component<()> = |cx, _| {
     ))
 };
 
-pub static Logout: Component<()> = |cx, _| {
+pub static Logout: Component<()> = |cx| {
     cx.render(rsx!(
         svg { class: "text-gray-600 w-5 h-5",
             fill: "none",
@@ -28,7 +28,7 @@ pub static Logout: Component<()> = |cx, _| {
     ))
 };
 
-pub static Mobilemenu: Component<()> = |cx, _| {
+pub static Mobilemenu: Component<()> = |cx| {
     cx.render(rsx!(
         svg { class: "text-white bg-indigo-500 hover:bg-indigo-600 block h-8 w-8 p-2 rounded",
             fill: "currentColor",
@@ -42,7 +42,7 @@ pub static Mobilemenu: Component<()> = |cx, _| {
     ))
 };
 
-pub static ArrowDown: Component<()> = |cx, _| {
+pub static ArrowDown: Component<()> = |cx| {
     cx.render(rsx!(
         span { class: "inline-block ml-auto",
             svg { class: "text-gray-400 w-3 h-3",
@@ -58,7 +58,7 @@ pub static ArrowDown: Component<()> = |cx, _| {
     ))
 };
 
-pub static Odometer: Component<()> = |cx, _| {
+pub static Odometer: Component<()> = |cx| {
     cx.render(rsx!(
         svg { class: "text-indigo-100 w-5 h-5",
             view_box: "0 0 18 18",
@@ -72,7 +72,7 @@ pub static Odometer: Component<()> = |cx, _| {
     ))
 };
 
-pub static IconCopy: Component<()> = |cx, _| {
+pub static IconCopy: Component<()> = |cx| {
     cx.render(rsx!(
         svg { class: "text-indigo-400 h-3 w-3",
             view_box: "0 0 12 14",
@@ -86,7 +86,7 @@ pub static IconCopy: Component<()> = |cx, _| {
     ))
 };
 
-pub static IconUpload: Component<()> = |cx, _| {
+pub static IconUpload: Component<()> = |cx| {
     cx.render(rsx!(
         span { class: "mr-1",
             svg { class: "h-3 w-3 text-indigo-300",
@@ -102,7 +102,7 @@ pub static IconUpload: Component<()> = |cx, _| {
     ))
 };
 
-pub static IconCharts: Component<()> = |cx, _| {
+pub static IconCharts: Component<()> = |cx| {
     cx.render(rsx!(
         svg {
             width: "16",
@@ -118,7 +118,7 @@ pub static IconCharts: Component<()> = |cx, _| {
     ))
 };
 
-pub static IconTripleDots: Component<()> = |cx, _| {
+pub static IconTripleDots: Component<()> = |cx| {
     cx.render(rsx!(
         svg {
             view_box: "0 0 16 4",
@@ -134,7 +134,7 @@ pub static IconTripleDots: Component<()> = |cx, _| {
     ))
 };
 
-pub static ChevronUpDown: Component<()> = |cx, _| {
+pub static ChevronUpDown: Component<()> = |cx| {
     cx.render(rsx!(
         svg { class: "text-gray-500",
             xmlns: "http://www.w3.org/2000/svg",
@@ -150,7 +150,7 @@ pub static ChevronUpDown: Component<()> = |cx, _| {
     ))
 };
 
-pub static Empty: Component<()> = |cx, _| {
+pub static Empty: Component<()> = |cx| {
     cx.render(rsx!(
         svg { class: "text-indigo-500 bg-indigo-100 block h-8 w-8 p-2 rounded",
             view_box: "0 0 20 20",
@@ -165,7 +165,7 @@ pub static Empty: Component<()> = |cx, _| {
         }
     ))
 };
-pub static SearchGlass: Component<()> = |cx, _| {
+pub static SearchGlass: Component<()> = |cx| {
     cx.render(rsx!(
         svg { class: "h-5 w-5",
             xmlns: "http://www.w3.org/2000/svg",
@@ -179,7 +179,7 @@ pub static SearchGlass: Component<()> = |cx, _| {
     ))
 };
 
-pub static ChatMessage: Component<()> = |cx, _| {
+pub static ChatMessage: Component<()> = |cx| {
     cx.render(rsx!(
         svg { class: "h-5 w-5",
             view_box: "0 0 18 20",
@@ -193,7 +193,7 @@ pub static ChatMessage: Component<()> = |cx, _| {
     ))
 };
 
-pub static Bell: Component<()> = |cx, _| {
+pub static Bell: Component<()> = |cx| {
     cx.render(rsx!(
         svg { class: "h-5 w-5",
             fill: "none",
@@ -207,7 +207,7 @@ pub static Bell: Component<()> = |cx, _| {
     ))
 };
 
-pub static Alert: Component<()> = |cx, _| {
+pub static Alert: Component<()> = |cx| {
     cx.render(rsx!(
         svg { 
             height: "20",
@@ -223,7 +223,7 @@ pub static Alert: Component<()> = |cx, _| {
     ))
 };
 
-pub static Close: Component<()> = |cx, _| {
+pub static Close: Component<()> = |cx| {
     cx.render(rsx!(
         svg { class: "text-indigo-800",
             fill: "none",

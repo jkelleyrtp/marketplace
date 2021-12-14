@@ -3,14 +3,13 @@ use std::collections::HashSet;
 use crate::{
     api::helium10::{calculate_review_velocity, ProductAnalysis, ProductListing},
     components::plots,
+    icons,
     state::use_keyword_entry,
 };
 
 use crate::state::KeywordEntry;
 use atoms::{use_read, use_set};
 use dioxus::prelude::*;
-use plotly::{common::Mode, Plot, Scatter};
-use plotly::{common::Title, Layout};
 use uuid::Uuid;
 
 #[derive(PartialEq, Props)]
@@ -18,10 +17,10 @@ pub struct ResultsPageProps {
     id: Uuid,
 }
 
-pub fn ResultsPage(cx: &Scope, props: &ResultsPageProps) -> Element {
-    let keywords = use_read(cx, crate::state::KEYWORDS);
-    let data = keywords.get(&props.id)?;
-    let user = use_read(cx, crate::state::USERS).get(&data.creator)?;
+pub fn ResultsPage(cx: Scope<ResultsPageProps>) -> Element {
+    let keywords = use_read(&cx, crate::state::KEYWORDS);
+    let data = keywords.get(&cx.props.id)?;
+    let user = use_read(&cx, crate::state::USERS).get(&data.creator)?;
 
     cx.render(rsx! (
         div { class: "py-4 px-6",
@@ -30,12 +29,18 @@ pub fn ResultsPage(cx: &Scope, props: &ResultsPageProps) -> Element {
                 h1 { class: "mb-2 text-3xl font-bold font-heading" "searched by: {user.short_name}" }
             }
         }
-        div { class: "container flex flex-row md:flex-row mx-auto"
-            ReviewVelocity { entry: data, divid: "r1" }
-            SalesPlot { entry: data, divid: "r2" }
-        }
+
+        /*
+        We care about whether or not a category is considered "fresh". IE is there a major owner of the market or is there good dispersion of revenue?
+
+        - A histogram of revenue
+        - A histogram of revenue divided by review velocity (is there a newcomer on the market?)
+
+
+        */
+        PlotContainer { entry: data }
         section { class: "text-gray-500 bg-white body-font mx-auto px-12 pt-12"
-            ListingTable { id: props.id }
+            ListingTable { id: cx.props.id }
         }
     ))
 }
@@ -45,21 +50,23 @@ struct ListingTableProps {
     id: Uuid,
 }
 
+#[derive(PartialEq)]
 enum Sortby {
-    Alphabetical,
     ReviewVelocity,
     NumReviews,
     Rating,
     Revenue,
     Sales,
+    Price,
 }
 
-fn ListingTable(cx: &Scope, props: &ListingTableProps) -> Element {
-    let current_keyword = use_keyword_entry(cx, props.id)?;
-    let show_more = use_ref(cx, || HashSet::new());
-    let sort_by = use_state(cx, || Sortby::NumReviews);
+fn ListingTable(cx: Scope<ListingTableProps>) -> Element {
+    let current_keyword = use_keyword_entry(&cx, cx.props.id)?;
+    let show_more = use_ref(&cx, || HashSet::new());
+    let sort_by = use_state(&cx, || Sortby::NumReviews);
+    let reverse_sort = use_state(&cx, || false);
 
-    let analsysis = use_read(cx, crate::state::PRODUCT_ANALYSIS);
+    let analsysis = use_read(&cx, crate::state::PRODUCT_ANALYSIS);
 
     let mut sorted_ids = current_keyword
         .products
@@ -68,7 +75,6 @@ fn ListingTable(cx: &Scope, props: &ListingTableProps) -> Element {
         .collect::<Vec<_>>();
 
     match *sort_by {
-        Sortby::Alphabetical => todo!(),
         Sortby::ReviewVelocity => sorted_ids
             .sort_by(|(_, a), (_, b)| a.review_velocity.partial_cmp(&b.review_velocity).unwrap()),
         Sortby::NumReviews => {
@@ -80,23 +86,33 @@ fn ListingTable(cx: &Scope, props: &ListingTableProps) -> Element {
         Sortby::Revenue => {
             sorted_ids.sort_by(|(_, a), (_, b)| a.revenue.partial_cmp(&b.revenue).unwrap())
         }
-        Sortby::Sales => todo!(),
+        Sortby::Price => {
+            sorted_ids.sort_by(|(_, a), (_, b)| a.price.partial_cmp(&b.price).unwrap())
+        }
+        Sortby::Sales => {
+            sorted_ids.sort_by(|(_, a), (_, b)| a.sales.partial_cmp(&b.sales).unwrap())
+        }
     }
 
-    let rows = sorted_ids
+    let mut rows = sorted_ids
         .iter()
         .rev()
         .enumerate()
         .map(|(idx, (product, analysis))| {
-            let analysis = analsysis.get(&product.asin);
             rsx!(TableRow {
-                key: "{product.asin}"
+                // todo: dioxus is broken around list re-ordring. Need to fix this.
+                // key: "{product.asin}"
                 is_gray: idx % 2 == 0,
                 product: product,
                 show_more: show_more,
-                analysis: analysis
+                analysis: Some(*analysis)
             })
-        });
+        })
+        .collect::<Vec<_>>();
+
+    if *reverse_sort {
+        rows.reverse();
+    }
 
     let page_header = current_keyword.products.values().next().map(|first| {
         rsx!(
@@ -106,6 +122,15 @@ fn ListingTable(cx: &Scope, props: &ListingTableProps) -> Element {
             }
         )
     });
+
+    let apply_sort = move |new: Sortby| {
+        if *sort_by == new {
+            reverse_sort.set(!*reverse_sort);
+        } else {
+            sort_by.set(new);
+            reverse_sort.set(false);
+        }
+    };
 
     cx.render(rsx! {
         section { class: "py-8",
@@ -118,19 +143,18 @@ fn ListingTable(cx: &Scope, props: &ListingTableProps) -> Element {
                     div { class: "p-4",
                         table { class: "table-fixed w-full",
                             // todo: sort by column
-                            // todo: show image
                             thead {
                                 tr { class: "text-xs text-gray-500 text-left",
                                     th { class: "pb-3 font-medium", "Image" }
                                     th { class: "pb-3 font-medium", "Name" }
-                                    th { class: "pb-3 font-medium", "Price" }
-                                    th { class: "pb-3 font-medium", "BSR" }
-                                    th { class: "pb-3 font-medium", "Created" }
-                                    th { class: "pb-3 font-medium", "Reviews" }
-                                    th { class: "pb-3 font-medium", "Rating" }
-                                    th { class: "pb-3 font-medium", "Sales" }
-                                    th { class: "pb-3 font-medium", "Review Velocity" }
-                                    th { class: "pb-3 font-medium", "Revenue" }
+                                    th { class: "pb-3 font-medium", "Price", icons::ChevronUpDown {}, onclick: move |_| apply_sort(Sortby::Price) }
+                                    th { class: "pb-3 font-medium", "BSR", icons::ChevronUpDown {} , onclick: move |_| apply_sort(Sortby::ReviewVelocity) }
+                                    th { class: "pb-3 font-medium", "Created", icons::ChevronUpDown {} , onclick: move |_| apply_sort(Sortby::ReviewVelocity) }
+                                    th { class: "pb-3 font-medium", "Reviews", icons::ChevronUpDown {} , onclick: move |_| apply_sort(Sortby::NumReviews) }
+                                    th { class: "pb-3 font-medium", "Rating", icons::ChevronUpDown {} , onclick: move |_| apply_sort(Sortby::Rating) }
+                                    th { class: "pb-3 font-medium", "Sales", icons::ChevronUpDown {} , onclick: move |_| apply_sort(Sortby::Sales) }
+                                    th { class: "pb-3 font-medium", "Review Velocity", icons::ChevronUpDown {} , onclick: move |_| apply_sort(Sortby::ReviewVelocity) }
+                                    th { class: "pb-3 font-medium", "Revenue", icons::ChevronUpDown {} , onclick: move |_| apply_sort(Sortby::Revenue) }
                                 }
                             }
                             tbody { {rows} }
@@ -150,11 +174,13 @@ struct TableRowProps<'a> {
     show_more: UseRef<'a, HashSet<String>>,
 }
 
-fn TableRow(cx: Context, props: &TableRowProps) -> Element {
-    let ProductListing { productData, .. } = props.product;
+fn TableRow<'a>(cx: Scope<'a, TableRowProps<'a>>) -> Element {
+    let ProductListing {
+        productData, asin, ..
+    } = cx.props.product;
 
     let len = productData.title.len();
-    let trim_len = if len > 100 { 100 } else { len };
+    let trim_len = if len > 25 { 25 } else { len };
     let title = &productData.title[..trim_len];
 
     let ProductAnalysis {
@@ -164,32 +190,40 @@ fn TableRow(cx: Context, props: &TableRowProps) -> Element {
         creation_date,
         rating,
         num_reviews,
-    } = match props.analysis {
+        price,
+    } = match cx.props.analysis {
         Some(a) => a.clone(),
-        None => ProductAnalysis::new(props.product),
+        None => ProductAnalysis::new(cx.props.product),
     };
 
     let img_url = &productData.imageUrl;
+
+    use num_format::{Locale, ToFormattedString};
+    let loc = Locale::en;
+
     cx.render(rsx!(
-        tr { class: format_args!("text-xs {}", if props.is_gray { "bg-gray-50" } else { "" }),
-            onclick: move |_| { props.show_more.write().insert(props.product.asin.clone()); },
+        tr { class: format_args!("text-xs {}", if cx.props.is_gray { "bg-gray-50" } else { "" }),
+            // onclick: move |_| { props.show_more.write().insert(props.product.asin.clone()); },
+            // href: "#"
             td { class: "flex flex-row"
                 img { class: "h-24 rounded", src: "{img_url}", }
             }
-            td { class: "py-5 pl-6 font-medium", "{title}..." }
-            td { class: "font-medium", "{productData.price}" }
+            td { class: "font-medium", a { "{title}...", href: "https://www.amazon.com/dp/{asin}" } }
+
+            // td { class: "py-5 pl-6 font-medium", a { href: "{}", } }
+            td { class: "font-medium", "${productData.price}" }
             td { class: "font-medium", "{productData.bsr}" }
             td { class: "font-medium", "{creation_date}" }
-            td { class: "font-medium", "{num_reviews}" }
-            td { class: "font-medium", "{rating}" }
-            td { class: "font-medium", "{sales}" }
-            td { class: "font-medium", "{review_velocity}" }
-            td { class: "font-medium", "{revenue}" }
+            td { class: "font-medium", {[format_args!("{}", (num_reviews as i64).to_formatted_string(&loc))]} }
+            td { class: "font-medium", {[format_args!("{}", rating)]} }
+            td { class: "font-medium", {[format_args!("${}", sales.to_formatted_string(&loc))]} }
+            td { class: "font-medium", {[format_args!("{}", (review_velocity as i64).to_formatted_string(&loc))]} }
+            td { class: "font-medium", {[format_args!("${}", (revenue as i64).to_formatted_string(&loc))]} }
         }
     ))
 }
 
-fn load_more(cx: Context) -> Element {
+fn load_more(cx: Scope<()>) -> Element {
     cx.render(rsx!(
         div { class: "text-center mt-5",
             a { class: "inline-flex items-center text-xs text-indigo-500 hover:text-blue-600 font-medium",
@@ -202,64 +236,91 @@ fn load_more(cx: Context) -> Element {
 }
 
 #[derive(Props)]
+pub struct PlotContainerProps<'a> {
+    entry: &'a KeywordEntry,
+}
+fn PlotContainer<'a>(cx: Scope<'a, PlotContainerProps<'a>>) -> Element {
+    let regen = use_state(&cx, || false);
+
+    if *regen {
+        cx.push_task(move || async move {
+            regen.set(false);
+        });
+        cx.render(rsx!("regenerating..."))
+    } else {
+        cx.render(rsx!(
+            div { class: "container flex flex-row md:flex-row mx-auto"
+                button {
+                    onclick: move |_| regen.set(true),
+                    "Regenerate Plots"
+                }
+                ReviewVelocity { entry: cx.props.entry, divid: "r1" }
+                SalesPlot { entry: cx.props.entry, divid: "r2" }
+            }
+        ))
+    }
+}
+
+#[derive(Props)]
 pub struct PlotsProps<'a> {
     entry: &'a KeywordEntry,
     divid: &'static str,
 }
 
-pub fn ReviewVelocity(cx: Context, props: &PlotsProps) -> Element {
-    let prices = props
+/// Generate a revenue vs review plot
+pub fn ReviewVelocity<'a>(cx: Scope<'a, PlotsProps<'a>>) -> Element {
+    use plotly::{common::Mode, Plot, Scatter};
+    use plotly::{common::Title, Layout};
+
+    let prices = cx
+        .props
         .entry
         .products
         .iter()
         .map(|(_asin, listing)| listing.productData.price)
         .collect::<Vec<_>>();
 
-    let x = (0..prices.len()).collect::<Vec<_>>();
-
     let mut plot = Plot::new();
-    let trace = Scatter::new(x, prices).mode(Mode::Markers);
+    plot.add_trace(Scatter::new(0..prices.len(), prices).mode(Mode::Markers));
+    plot.set_layout(Layout::new().title(Title::new("Distribution of Revenue")));
 
-    plot.add_trace(trace);
-    plot.set_layout(Layout::new().title(Title::new("Sales")));
-
-    let name = props.divid;
-
-    let raw = plot.to_inline_html(Some(name));
-    let raw_wo_div = &raw[128..raw.len() - 9];
-
-    cx.render(rsx! {
-        div {
-            div { id: "{name}", class: "" }
-            script { "{raw_wo_div}" }
-        }
-    })
+    build_plotly(&cx, plot, cx.props.divid)
 }
 
-pub fn SalesPlot(cx: Context, props: &PlotsProps) -> Element {
-    let prices = props
+pub fn SalesPlot<'a>(cx: Scope<'a, PlotsProps<'a>>) -> Element {
+    use plotly::{common::Mode, Plot, Scatter};
+    use plotly::{common::Title, Layout};
+
+    let prices = cx
+        .props
         .entry
         .products
         .iter()
         .map(|(_asin, listing)| listing.productData.price)
         .collect::<Vec<_>>();
 
-    let x = (0..prices.len()).collect::<Vec<_>>();
-
     let mut plot = Plot::new();
-    let trace = Scatter::new(x, prices).mode(Mode::Markers);
 
-    plot.add_trace(trace);
-    plot.set_layout(Layout::new().title(Title::new("Sales")));
+    plot.add_trace(
+        Scatter::new(0..prices.len(), prices)
+            .mode(Mode::Markers)
+            .legend_group("review"),
+    );
+    plot.set_layout(Layout::new().title(Title::new(
+        "Distribution of Revenue normalized by Review Velocity",
+    )));
 
-    let name = props.divid;
+    build_plotly(&cx, plot, cx.props.divid)
+}
 
-    let raw = plot.to_inline_html(Some(name));
+fn build_plotly<'a>(cx: &'a ScopeState, plot: plotly::Plot, id: &str) -> Element<'a> {
+    // need to trim out the div
+    let raw = plot.to_inline_html(Some(id));
     let raw_wo_div = &raw[128..raw.len() - 9];
 
     cx.render(rsx! {
         div {
-            div { id: "{name}", class: "" }
+            div { id: "{id}", class: "" }
             script { "{raw_wo_div}" }
         }
     })

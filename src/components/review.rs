@@ -5,7 +5,7 @@ use atoms::use_read;
 use dioxus::prelude::*;
 use uuid::Uuid;
 
-pub static Review: Component<()> = |cx, _| {
+pub static Review: Component<()> = |cx| {
     cx.render(rsx!(
         section { class: "py-8",
             div { class: "container px-4 mx-auto",
@@ -18,8 +18,8 @@ pub static Review: Component<()> = |cx, _| {
     ))
 };
 
-fn ReviewTable(cx: Context, _: &()) -> Element {
-    let keywords = use_read(cx, state::KEYWORDS);
+fn ReviewTable(cx: Scope<()>) -> Element {
+    let keywords = use_read(&cx, state::KEYWORDS);
 
     let rows = keywords.keys().copied().map(|id| {
         rsx!(Row {
@@ -56,13 +56,13 @@ struct RowProps {
     id: Uuid,
 }
 
-fn Row(cx: Context, props: &RowProps) -> Element {
+fn Row(cx: Scope<RowProps>) -> Element {
     let state::KeywordEntry {
         keyword,
         creator,
         products,
         ..
-    } = state::use_keyword_entry(cx, props.id)?;
+    } = state::use_keyword_entry(&cx, cx.props.id)?;
 
     let img_url = &products.values().next().unwrap().productData.imageUrl;
 
@@ -95,7 +95,7 @@ fn Row(cx: Context, props: &RowProps) -> Element {
     ))
 }
 
-fn ManageKeywords(cx: Context, _: &()) -> Element {
+fn ManageKeywords(cx: Scope<()>) -> Element {
     cx.render(rsx!(
         div { class: "px-6 border-b border-blue-50",
             div { class: "flex flex-wrap items-center mb-4",
@@ -127,7 +127,7 @@ fn ManageKeywords(cx: Context, _: &()) -> Element {
     ))
 }
 
-fn see_more(cx: Context) -> Element {
+fn see_more(cx: Scope<()>) -> Element {
     cx.render(rsx!(
         div { class: "py-4 text-center",
             a { class: "inline-flex items-center text-xs text-indigo-500 hover:text-blue-600 font-medium",

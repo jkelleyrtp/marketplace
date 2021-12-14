@@ -12,9 +12,9 @@ const ROUTES: &[AppRoute] = &[
     AppRoute::Analyze,
 ];
 
-pub fn VerticalNav(cx: Context, _props: &()) -> Element {
-    let set_route = use_set(cx, crate::state::ROUTE);
-    let keywords = use_read(cx, crate::state::KEYWORDS);
+pub fn VerticalNav(cx: Scope<()>) -> Element {
+    let set_route = use_set(&cx, crate::state::ROUTE);
+    let keywords = use_read(&cx, crate::state::KEYWORDS);
 
     let primaries = ROUTES.iter().map(|route| {
         let text = match route {
@@ -87,7 +87,7 @@ pub fn VerticalNav(cx: Context, _props: &()) -> Element {
   })
 }
 
-pub fn TopNav(cx: Context, props: &()) -> Element {
+pub fn TopNav(cx: Scope<()>) -> Element {
     cx.render(rsx!(
         section { class: "py-5 px-6 bg-white shadow",
             nav { class: "relative",
@@ -114,8 +114,8 @@ pub fn TopNav(cx: Context, props: &()) -> Element {
     ))
 }
 
-fn UserCard(cx: Context, props: &()) -> Element {
-    let user = use_current_user(cx)?;
+fn UserCard(cx: Scope<()>) -> Element {
+    let user = use_current_user(&cx)?;
 
     cx.render(rsx!(
         div { class: "hidden lg:block",
@@ -131,7 +131,7 @@ fn UserCard(cx: Context, props: &()) -> Element {
     ))
 }
 
-fn QuickIcons(cx: Context, props: &()) -> Element {
+fn QuickIcons(cx: Scope<()>) -> Element {
     cx.render(rsx!(
         ul { class: "hidden lg:flex items-center space-x-6 mr-6",
             li {
