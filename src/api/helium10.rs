@@ -110,7 +110,7 @@ pub struct ProductAnalysis {
     pub num_reviews: f64,
     // pub asin: String,
     // pub brand: String,
-    // pub price: f64,
+    pub price: f64,
     // pub bsr: isize,
     // pub fba_fees: isize,
     // pub sellers_number: isize,
@@ -147,6 +147,7 @@ impl ProductAnalysis {
             creation_date: format!("{}", newdate),
             rating: p.rating,
             num_reviews: p.count,
+            price: product.productData.price,
         }
     }
 }

@@ -1,8 +1,8 @@
 use crate::state::use_current_user;
 use dioxus::prelude::*;
 
-pub static Greeting: Component<()> = |cx, _| {
-    let user = use_current_user(cx)?;
+pub static Greeting: Component<()> = |cx| {
+    let user = use_current_user(&cx)?;
 
     cx.render(rsx!(
         div { class: "py-8 px-6",

@@ -10,10 +10,10 @@ use crate::{
 
 use csv;
 
-pub static AddNew: Component<()> = |cx, props| {
+pub static AddNew: Component<()> = |cx| {
     let mut state = use_app_state(cx)?;
-    let mut name = use_state(cx, String::new);
-    let mut contents = use_state(cx, String::new);
+    let mut name = use_state(&cx, String::new);
+    let mut contents = use_state(&cx, String::new);
     let cur_user = state.read().current_user?;
 
     let submit = move |_| {

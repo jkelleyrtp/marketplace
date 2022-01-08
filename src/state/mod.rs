@@ -1,6 +1,6 @@
 use crate::{
     api::{
-        cfg::{ScraperCfg, ScraperCfgFile},
+        cfg::ScraperCfg,
         helium10::{ProductAnalysis, ProductListing},
     },
     AppRoute,
@@ -65,8 +65,8 @@ pub struct KeywordEntry {
 
 pub fn save() {}
 
-pub fn use_save_keywords(cx: Context) -> impl Fn() {
-    let root = use_atom_root(cx);
+pub fn use_save_keywords(cx: Scope<()>) -> impl Fn() {
+    let root = use_atom_root(&cx);
 
     || {
         std::fs::write(
@@ -78,13 +78,13 @@ pub fn use_save_keywords(cx: Context) -> impl Fn() {
     }
 }
 
-pub(crate) fn use_current_user(cx: Context) -> Option<&User> {
-    let id = use_read(cx, CURRENT_USER).as_ref()?;
-    let users = use_read(cx, USERS);
+pub(crate) fn use_current_user(cx: &ScopeState) -> Option<&User> {
+    let id = use_read(&cx, CURRENT_USER).as_ref()?;
+    let users = use_read(&cx, USERS);
     users.get(id)
 }
 
-pub fn use_keyword_entry(cx: Context, id: Uuid) -> Option<&KeywordEntry> {
-    let keywords = use_read(cx, crate::state::KEYWORDS);
+pub fn use_keyword_entry(cx: &ScopeState, id: Uuid) -> Option<&KeywordEntry> {
+    let keywords = use_read(&cx, crate::state::KEYWORDS);
     keywords.get(&id)
 }

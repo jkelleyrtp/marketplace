@@ -1,8 +1,8 @@
 use dioxus::prelude::*;
 
-pub static Login: Component<()> = |cx, props| {
-    let mut username = use_state(cx, String::new);
-    let mut password = use_state(cx, String::new);
+pub static Login: Component<()> = |cx| {
+    let mut username = use_state(&cx, String::new);
+    let mut password = use_state(&cx, String::new);
 
     let submit = |_| {
         //
